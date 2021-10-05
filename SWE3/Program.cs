@@ -1,4 +1,5 @@
 ﻿using System;
+using Npgsql.Replication.PgOutput.Messages;
 
 namespace SWE3
 {
@@ -6,7 +7,7 @@ namespace SWE3
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            //ORM.
         }
     }
 }

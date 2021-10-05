@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ORM
+
+
+namespace SWE3.Demo.OrmFramework
 {
-    class PrimaryKeyAttribute
-    {
-    }
+    /// <summary>This attribute marks a property as a primary key field.</summary>
+    public class PrimaryKeyAttribute: FieldAttribute
+    {}
 }
