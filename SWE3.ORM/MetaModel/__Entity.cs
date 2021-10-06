@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SWE3.ORM;
 
-namespace ORM.Self.MetaModel
+namespace SWE3.ORM.MetaModel
 {
     /// <summary>This class holds entity metadata.</summary>
     internal class __Entity
