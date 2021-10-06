@@ -76,6 +76,10 @@ namespace SWE3.ORM.MetaModel
             get; internal set;
         } = false;
 
+        public bool GiveToChild
+        {
+            get; internal set;
+        } = false;
 
         /// <summary>Gets if the column is nullable.</summary>
         public bool IsNullable

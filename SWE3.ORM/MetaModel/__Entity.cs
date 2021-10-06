@@ -7,13 +7,15 @@ namespace SWE3.ORM.MetaModel
     /// <summary>This class holds entity metadata.</summary>
     internal class __Entity
     {
+
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // constructors                                                                                                     //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         /// <summary>Creates a new instance of this class.</summary>
         /// <param name="t">Type.</param>
-        public __Entity(Type t)
+        public __Entity(Type t , __Entity parent)
         {
             EntityAttribute tattr = (EntityAttribute) t.GetCustomAttribute(typeof(EntityAttribute));
             if((tattr == null) || (string.IsNullOrWhiteSpace(tattr.TableName)))
@@ -25,11 +27,19 @@ namespace SWE3.ORM.MetaModel
             Member = t;
             List<__Field> fields = new List<__Field>();
 
-            foreach(PropertyInfo i in t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach(PropertyInfo i in t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly
+                | System.Reflection.BindingFlags.DeclaredOnly))
             {
                 if((IgnoreAttribute) i.GetCustomAttribute(typeof(IgnoreAttribute)) != null) continue;
 
                 __Field field = new __Field(this);
+
+
+                if ((ChildAttribute) i.GetCustomAttribute(typeof(ChildAttribute)) != null)
+                {
+                    field.GiveToChild = true;
+                }
+
 
                 FieldAttribute fattr = (FieldAttribute) i.GetCustomAttribute(typeof(FieldAttribute));
 
@@ -55,12 +65,37 @@ namespace SWE3.ORM.MetaModel
                     field.ColumnName = i.Name;
                     field.ColumnType = i.PropertyType;
                 }
+
                 field.Member = i;
 
                 fields.Add(field);
             }
 
+            if (parent == null)
+            {
+                Fields = fields.ToArray();
+            }
+            else
+            {
+                foreach (__Field var in parent.Fields)
+                {
+
+                    if (!var.GiveToChild)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        fields.Add(var);
+                    }
+
+
+                }
+
+              
+            }
             Fields = fields.ToArray();
+
         }
 
 

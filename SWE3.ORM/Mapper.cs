@@ -18,26 +18,29 @@ namespace SWE3.ORM
         }
         public bool SaveObject(object obj)
         {
-            List<__Entity> types = new List<__Entity>();
+            List<Type> types = new List<Type>();
+            
+            __Entity parent = null;
             Type type = obj.GetType();
             while (type.Name != "Object")
             {
-               
-               
-                types.Add(new __Entity(type));
-                
-               
+                types.Add(type);
                 type = type.BaseType;
 
-               
+
+
             }
 
+            types.Reverse();
 
 
 
             foreach (var tp in types)
             {
-                Console.WriteLine(InsertTextBuilder(tp, obj));
+                var ent = new __Entity(tp, parent);
+
+                parent = ent;
+                Console.WriteLine(InsertTextBuilder(ent, obj));
             }
 
             Console.WriteLine(types);

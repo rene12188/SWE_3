@@ -11,7 +11,7 @@ namespace SWE3.Demo.SampleApp
 
         protected static int _N = 1;
 
-
+        [ChildAttribute]
         [PrimaryKey]
         public string ID { get; set; }
 
