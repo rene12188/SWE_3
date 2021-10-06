@@ -1,18 +1,21 @@
 ﻿using System;
 
-
-
-namespace SWE3.Demo.OrmFramework
+namespace SWE3.ORM
 {
-    /// <summary>This attribute marks a class as an entity.</summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class EntityAttribute: Attribute
+    /// <summary>This attribute marks a member as a field.</summary>
+    public class FieldAttribute: Attribute
     {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public members                                                                                                   //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        /// <summary>Table name.</summary>
-        public string TableName;
+        /// <summary>Database column name.</summary>
+        public string ColumnName = null;
+
+        /// <summary>Database column type.</summary>
+        public Type ColumnType = null;
+
+        /// <summary>Nullable flag.</summary>
+        public bool Nullable = false;
     }
 }

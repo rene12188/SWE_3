@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SWE3.ORM;
 
-
-
-namespace SWE3.Demo.OrmFramework.MetaModel
+namespace ORM.Self.MetaModel
 {
     /// <summary>This class holds entity metadata.</summary>
-    internal class MEntity
+    internal class __Entity
     {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // constructors                                                                                                     //
@@ -15,7 +14,7 @@ namespace SWE3.Demo.OrmFramework.MetaModel
         
         /// <summary>Creates a new instance of this class.</summary>
         /// <param name="t">Type.</param>
-        public MEntity(Type t)
+        public __Entity(Type t)
         {
             EntityAttribute tattr = (EntityAttribute) t.GetCustomAttribute(typeof(EntityAttribute));
             if((tattr == null) || (string.IsNullOrWhiteSpace(tattr.TableName)))
@@ -25,13 +24,13 @@ namespace SWE3.Demo.OrmFramework.MetaModel
             else { TableName = tattr.TableName; }
 
             Member = t;
-            List<MField> fields = new List<MField>();
+            List<__Field> fields = new List<__Field>();
 
             foreach(PropertyInfo i in t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 if((IgnoreAttribute) i.GetCustomAttribute(typeof(IgnoreAttribute)) != null) continue;
 
-                MField field = new MField(this);
+                __Field field = new __Field(this);
 
                 FieldAttribute fattr = (FieldAttribute) i.GetCustomAttribute(typeof(FieldAttribute));
 
@@ -48,10 +47,7 @@ namespace SWE3.Demo.OrmFramework.MetaModel
 
                     field.IsNullable = fattr.Nullable;
 
-                    if(field.IsForeignKey = (fattr is ForeignKeyAttribute))
-                    {
-                        field.IsForeignKey = true;
-                    }
+                    field.IsForeignKey = (fattr is ForeignKeyAttribute);
                 }
                 else
                 {
@@ -89,16 +85,43 @@ namespace SWE3.Demo.OrmFramework.MetaModel
 
 
         /// <summary>Gets the entity fields.</summary>
-        public MField[] Fields
+        public __Field[] Fields
         {
             get; private set;
         }
 
 
         /// <summary>Gets the entity primary key.</summary>
-        public MField PrimaryKey
+        public __Field PrimaryKey
         {
             get; private set;
+        }
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // public methods                                                                                                   //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>Gets the entity SQL.</summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <returns>SQL string.</returns>
+        public string GetSQL(string prefix = null)
+        {
+            if(prefix == null)
+            {
+                prefix = "";
+            }
+
+            string rval = "SELECT ";
+            for(int i = 0; i < Fields.Length; i++)
+            {
+                if(i > 0) { rval += ", "; }
+                rval += prefix.Trim() + Fields[i].ColumnName;
+            }
+            rval += (" FROM " + TableName);
+
+            return rval;
         }
     }
 }

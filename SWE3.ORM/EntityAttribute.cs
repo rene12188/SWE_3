@@ -1,8 +1,6 @@
 ﻿using System;
 
-
-
-namespace SWE3.Demo.OrmFramework
+namespace SWE3.ORM
 {
     /// <summary>This attribute marks a class as an entity.</summary>
     [AttributeUsage(AttributeTargets.Class)]

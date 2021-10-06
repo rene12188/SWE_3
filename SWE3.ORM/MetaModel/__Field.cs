@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-
-
-namespace SWE3.Demo.OrmFramework.MetaModel
+namespace ORM.Self.MetaModel
 {
     /// <summary>This class holds field metadata.</summary>
     internal class __Field
@@ -98,7 +96,7 @@ namespace SWE3.Demo.OrmFramework.MetaModel
         {
             if(IsForeignKey)
             {
-                return Type._GetEntity().PrimaryKey.ToColumnType(Type._GetEntity().PrimaryKey.GetValue(value));
+               // return Type._GetEntity().PrimaryKey.ToColumnType(Type._GetEntity().PrimaryKey.GetValue(value));
             }
 
             if(Type == ColumnType) { return value; }
