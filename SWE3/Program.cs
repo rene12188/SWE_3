@@ -18,10 +18,11 @@ namespace SWE3.Demo.SampleApp
                 new NpgsqlConnection(
                     "Server = 127.0.0.1; Port = 5432; Database = swe3; User Id = postgres; Password = a");
             Mapper map = new Mapper(conn);
-            Student tmp = new Student();
-            tmp.Grade = 1;
+            Teacher tmp = new Teacher();
+            tmp.Salary = 1;
             tmp.Name = "Mr Placeholder";
             tmp.BirthDate = new DateTime(2021, 9, 17);
+            tmp.HireDate = new DateTime(2021, 9, 17);
             tmp.FirstName = "John";
             tmp.ID = "if19b09888";
 

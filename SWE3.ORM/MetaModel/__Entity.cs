@@ -31,6 +31,7 @@ namespace SWE3.ORM.MetaModel
                 | System.Reflection.BindingFlags.DeclaredOnly))
             {
                 if((IgnoreAttribute) i.GetCustomAttribute(typeof(IgnoreAttribute)) != null) continue;
+                if ((ForeignKeyAttribute)i.GetCustomAttribute(typeof(ForeignKeyAttribute)) != null) continue;
 
                 __Field field = new __Field(this);
 
