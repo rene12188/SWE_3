@@ -23,12 +23,12 @@ namespace SWE3.Demo.SampleApp
 
 
         /// <summary>Gets the teacher's classes.</summary>
-        [ForeignKey(ColumnName = "KTEACHER")]
+        [SingleForeignKey(ColumnName = "KTEACHER")]
         public List<Class> Classes { get; private set; }
 
 
         /// <summary>Gets the teacher's courses.</summary>
-        [ForeignKey(ColumnName = "KTEACHER")]
+        [SingleForeignKey(ColumnName = "KTEACHER")]
         public List<Course> Courses { get; private set; }
     }
 }

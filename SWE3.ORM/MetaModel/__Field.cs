@@ -103,7 +103,8 @@ namespace SWE3.ORM.MetaModel
         {
             if (IsForeignKey)
             {
-                return Type._GetEntity().PrimaryKey.ToColumnType(Type._GetEntity().PrimaryKey.GetValue(value));
+                //return Type._GetEntity().PrimaryKey.ToColumnType(Type._GetEntity().PrimaryKey.GetValue(value));
+                //Mapper.SaveObject(value);
             }
 
 

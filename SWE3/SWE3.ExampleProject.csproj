@@ -10,10 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Show\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SWE3.ORM\SWE3.ORM.csproj" />
   </ItemGroup>
 

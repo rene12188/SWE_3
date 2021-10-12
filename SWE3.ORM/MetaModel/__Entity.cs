@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
+using Npgsql.PostgresTypes;
 
 namespace SWE3.ORM.MetaModel
 {
@@ -33,7 +35,7 @@ namespace SWE3.ORM.MetaModel
                 | System.Reflection.BindingFlags.DeclaredOnly))
             {
                 if((IgnoreAttribute) i.GetCustomAttribute(typeof(IgnoreAttribute)) != null) continue;
-                if ((ForeignKeyAttribute)i.GetCustomAttribute(typeof(ForeignKeyAttribute)) != null) continue;
+                //if ((SingleForeignKeyAttribute)i.GetCustomAttribute(typeof(SingleForeignKeyAttribute)) != null) continue;
 
                 __Field field = new __Field(this);
 
@@ -59,7 +61,7 @@ namespace SWE3.ORM.MetaModel
 
                     field.IsNullable = fattr.Nullable;
 
-                    field.IsForeignKey = (fattr is ForeignKeyAttribute);
+                    field.IsForeignKey = (fattr is SingleForeignKeyAttribute);
                 }
                 else
                 {
@@ -102,7 +104,7 @@ namespace SWE3.ORM.MetaModel
             Fields = fields.ToArray();
 
             Internals = fields.Where(m => (!m.IsExternal)).ToArray();
-            Internals = fields.Where(m => (!m.IsInternal)).ToArray();
+            Externals = fields.Where(m => (!m.IsInternal)).ToArray();
 
         }
 
@@ -173,6 +175,19 @@ namespace SWE3.ORM.MetaModel
             rval += (" FROM " + TableName);
 
             return rval;
+        }
+
+        public __Field GetFieldforColumn(string column)
+        {
+            column = column.ToUpper();
+
+            foreach (__Field i in Internals)
+            {
+                if (i.ColumnName.ToUpper() == column) return i;
+
+            }
+
+            return null;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace SWE3.Demo.SampleApp.School
 
 
         /// <summary>Gets or sets the class teacher.</summary>
-        [ForeignKey(ColumnName = "KTEACHER")]
+        [SingleForeignKey(ColumnName = "KTEACHER")]
         public Teacher Teacher
         {
             get; set;
