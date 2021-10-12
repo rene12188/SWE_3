@@ -17,7 +17,7 @@ namespace SWE3.Demo.SampleApp
             NpgsqlConnection  conn =
                 new NpgsqlConnection(
                     "Server = 127.0.0.1; Port = 5432; Database = swe3; User Id = postgres; Password = a");
-            Mapper map = new Mapper(conn);
+
             Teacher tmp = new Teacher();
             tmp.Salary = 1;
             tmp.Name = "Mr Placeholder";
@@ -27,7 +27,7 @@ namespace SWE3.Demo.SampleApp
             tmp.ID = "if19b09888";
 
             tmp.Gender = Gender.MALE;
-            map.SaveObject(tmp);
+            Mapper.SaveObject(tmp);
 
             /*  Type type = tmp.GetType();
               var props = type.GetProperties();

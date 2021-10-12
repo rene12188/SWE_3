@@ -76,6 +76,18 @@ namespace SWE3.ORM.MetaModel
             get; internal set;
         } = false;
 
+        public bool IsExternal
+        {
+            get; internal set;
+        } = false;
+
+        public bool IsInternal
+        {
+            get; internal set;
+        } = false;
+
+
+
         public bool GiveToChild
         {
             get; internal set;
@@ -89,10 +101,10 @@ namespace SWE3.ORM.MetaModel
 
         public object ToColumnType(object value)
         {
-           /* if (IsForeignKey)
+            if (IsForeignKey)
             {
                 return Type._GetEntity().PrimaryKey.ToColumnType(Type._GetEntity().PrimaryKey.GetValue(value));
-            }*/
+            }
 
 
 

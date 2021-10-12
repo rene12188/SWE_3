@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,14 +10,17 @@ using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
 {
-    public class Mapper
+    public static class Mapper
     {
-        internal NpgsqlConnection __conn = null;
-        public Mapper(NpgsqlConnection conn)
+
+        private static Dictionary<Type, __Entity> _Entities = new Dictionary<Type, __Entity>();
+
+        internal static NpgsqlConnection __conn = null;
+        /*public Mapper(NpgsqlConnection conn)
         {
             __conn = conn;
-        }
-        public bool SaveObject(object obj)
+        }*/
+        public static bool SaveObject(object obj)
         {
             List<Type> types = new List<Type>();
             
@@ -40,7 +44,9 @@ namespace SWE3.ORM
                 var ent = new __Entity(tp, parent);
 
                 parent = ent;
-                Console.WriteLine(InsertTextBuilder(ent, obj));
+
+                if(!GetGeneralisationAttribute(parent.Member))
+                    Console.WriteLine(InsertTextBuilder(ent, obj));
             }
 
             Console.WriteLine(types);
@@ -50,6 +56,55 @@ namespace SWE3.ORM
 
             return false;
         }
+
+      /*  public static  T Get<T>(string ID)
+        {
+
+            return new T();
+        }*/
+
+
+        public static object _CreateObject(Type t, IDataReader re, ICollection<object> localcache)
+        {
+
+            __Entity ent = t._GetEntity();
+            object rval = _SearchCache(t, re.GetValue(re.GetOrdinal(ent.PrimaryKey.ColumnName)), localcache);
+
+            if (rval == null)
+            {
+                if (localcache == null)
+                {
+                    localcache = new List<object>();
+                }
+                localcache.Add(Activator.CreateInstance(t));
+            }
+
+            return rval;
+
+            //old
+            /*
+            object rval = Activator.CreateInstance(t);
+        
+            foreach (__Field i in t._GetEntity().Fields)
+            {
+                i.SetValue(rval, i.ToFieldType(re.GetValue(re.GetOrdinal(i.ColumnName))));
+            }
+
+            return rval;*/
+        }
+        internal static __Entity _GetEntity(this object o)
+        {
+            Type t = ((o is Type) ? (Type)o : o.GetType());
+
+            if (!_Entities.ContainsKey(t))
+            {
+                _Entities.Add(t, new __Entity(t, null));
+            }
+
+            return _Entities[t];
+        }
+
+
 
         public static void GetFieldAttribute(Type t)
         {
@@ -72,7 +127,24 @@ namespace SWE3.ORM
 
         }
 
-        internal  string InsertTextBuilder(__Entity ent, object obj)
+        public static bool GetGeneralisationAttribute(Type t)
+        {
+            // Get instance of the attribute.
+            GeneralisatinAttribute MyAttribute =
+                (GeneralisatinAttribute)Attribute.GetCustomAttribute(t, typeof(GeneralisatinAttribute));
+            if (MyAttribute != null)
+                return true;
+
+
+            return false;
+        }
+
+      
+
+    
+
+
+    internal static string InsertTextBuilder(__Entity ent, object obj)
         {
             int fieldnumber = ent.Fields.Length;
 
@@ -103,6 +175,21 @@ namespace SWE3.ORM
         }
 
 
+    internal static object _SearchCache(Type t, object pk, ICollection<object> locaclcache)
+    {
+
+        if (locaclcache != null)
+        {
+            foreach (object i in locaclcache)
+            {
+                if(i.GetType() != t) continue;
+                if (i._GetEntity().PrimaryKey.GetValue(i).Equals(pk)) return i;
+
+
+                }
+            } 
+        return null;
+    }
     }
 
 

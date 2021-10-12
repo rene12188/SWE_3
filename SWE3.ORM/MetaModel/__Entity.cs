@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Reflection;
 
 namespace SWE3.ORM.MetaModel
@@ -78,16 +80,18 @@ namespace SWE3.ORM.MetaModel
             }
             else
             {
+                bool generalised = Mapper.GetGeneralisationAttribute(parent.Member);
                 foreach (__Field var in parent.Fields)
-                {
+                { 
 
-                    if (!var.GiveToChild)
+                    if (var.GiveToChild || generalised)
                     {
-                        continue;
+                        fields.Add(var);
+                        
                     }
                     else
                     {
-                        fields.Add(var);
+                        continue;
                     }
 
 
@@ -96,6 +100,9 @@ namespace SWE3.ORM.MetaModel
               
             }
             Fields = fields.ToArray();
+
+            Internals = fields.Where(m => (!m.IsExternal)).ToArray();
+            Internals = fields.Where(m => (!m.IsInternal)).ToArray();
 
         }
 
@@ -125,6 +132,15 @@ namespace SWE3.ORM.MetaModel
             get; private set;
         }
 
+        public __Field[] Internals
+        {
+            get; private set;
+        }
+
+        public __Field[] Externals
+        {
+            get; private set;
+        }
 
         /// <summary>Gets the entity primary key.</summary>
         public __Field PrimaryKey
