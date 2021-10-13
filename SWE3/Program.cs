@@ -19,7 +19,7 @@ namespace SWE3.Demo.SampleApp
                 new NpgsqlConnection(
                     "Server = 127.0.0.1; Port = 5432; Database = swe3; User Id = postgres; Password = a");
 
-          //  Class1.SaveTeacher();
+            Class1.SaveTeacher();
             
             SaveClassWTeacher.SaveTeacher();
 

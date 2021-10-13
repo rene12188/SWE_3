@@ -45,7 +45,7 @@ namespace SWE3.ORM
 
                 parent = ent;
 
-                if(!GetGeneralisationAttribute(parent.Member))
+                if(!_GetGeneralisationAttribute(parent.Member))
                     Console.WriteLine(InsertTextBuilder(ent, obj));
             }
 
@@ -106,7 +106,7 @@ namespace SWE3.ORM
 
 
 
-        public static void GetFieldAttribute(Type t)
+        public static void _GetFieldAttribute(Type t)
         {
             // Get instance of the attribute.
             FieldAttribute MyAttribute =
@@ -117,7 +117,7 @@ namespace SWE3.ORM
 
         }
 
-        public static void GetEntityAttribute(Type t)
+        public static void _GetEntityAttribute(Type t)
         {
             // Get instance of the attribute.
             EntityAttribute MyAttribute =
@@ -127,7 +127,7 @@ namespace SWE3.ORM
 
         }
 
-        public static bool GetGeneralisationAttribute(Type t)
+        public static bool _GetGeneralisationAttribute(Type t)
         {
             // Get instance of the attribute.
             GeneralisatinAttribute MyAttribute =

@@ -61,7 +61,7 @@ namespace SWE3.ORM.MetaModel
 
                     field.IsNullable = fattr.Nullable;
 
-                    field.IsForeignKey = (fattr is SingleForeignKeyAttribute);
+                    field.IsSingleForeignKey = (fattr is SingleForeignKeyAttribute);
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace SWE3.ORM.MetaModel
             }
             else
             {
-                bool generalised = Mapper.GetGeneralisationAttribute(parent.Member);
+                bool generalised = Mapper._GetGeneralisationAttribute(parent.Member);
                 foreach (__Field var in parent.Fields)
                 { 
 

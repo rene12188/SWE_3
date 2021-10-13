@@ -71,7 +71,17 @@ namespace SWE3.ORM.MetaModel
 
 
         /// <summary>Gets if the column is a foreign key.</summary>
-        public bool IsForeignKey
+        public bool IsSingleForeignKey
+        {
+            get; internal set;
+        } = false;
+
+        public bool IsMultiForeignKey
+        {
+            get; internal set;
+        } = false;
+
+        public bool IsExternalForeignKey
         {
             get; internal set;
         } = false;
@@ -101,7 +111,7 @@ namespace SWE3.ORM.MetaModel
 
         public object ToColumnType(object value)
         {
-            if (IsForeignKey)
+            if (IsSingleForeignKey)
             {
                 //return Type._GetEntity().PrimaryKey.ToColumnType(Type._GetEntity().PrimaryKey.GetValue(value));
                 //Mapper.SaveObject(value);
