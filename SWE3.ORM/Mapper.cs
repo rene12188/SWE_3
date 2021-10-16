@@ -145,7 +145,8 @@ namespace SWE3.ORM
 
 
     internal static string InsertTextBuilder(__Entity ent, object obj)
-        {
+    {   
+            int singlepropcount = 0;
             int fieldnumber = ent.Fields.Length;
 
             string fields = "(";
@@ -156,7 +157,18 @@ namespace SWE3.ORM
             {
                 fields += ent.Fields[i].ColumnName.ToString();
 
-                values += "'" +ent.Fields[i].ToColumnType(ent.Fields[i].GetValue(obj)) +"'";
+                if (ent.Fields[i].IsSingleForeignKey)
+                {
+
+                   var tmp =  ent.Fields[i].ToColumnType(ent.Fields[i].GetValue(obj));
+                   SaveObject(tmp);
+                   values += "'" + tmp.ToString() + "'";
+                }
+                else
+                {
+                    values += "'" + ent.Fields[i].ToColumnType(ent.Fields[i].GetValue(obj)) + "'";
+                }
+               
 
                 if (i == ent.Fields.Length - 1)
                 {

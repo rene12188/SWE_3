@@ -30,5 +30,10 @@ namespace SWE3.Demo.SampleApp
         /// <summary>Gets the teacher's courses.</summary>
         [MultipleForeignKey(ColumnName = "KTEACHER")]
         public List<Course> Courses { get; private set; }
+
+        public override string ToString()
+        {
+            return this.ID;
+        }
     }
 }
