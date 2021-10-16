@@ -51,7 +51,7 @@ namespace SWE3.ORM
 
             Console.WriteLine(types);
             return false;
-            GetEntityAttribute(type);
+
 
 
             return false;

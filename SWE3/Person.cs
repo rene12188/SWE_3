@@ -6,7 +6,7 @@ using SWE3.ORM;
 namespace SWE3.Demo.SampleApp
 {
     /// <summary>This is a person implementation (from School example).</summary>
-   // [GeneralisatinAttribute]
+    [GeneralisatinAttribute]
     public abstract class Person
     {
 
