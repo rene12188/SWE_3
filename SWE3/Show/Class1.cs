@@ -20,7 +20,7 @@ namespace SWE3.ExampleProject.Show
             tmp.FirstName = "John";
             tmp.ID = "if19b09888";
 
-            tmp.Gender = Gender.MALE;
+            tmp.IsMale = 1;
             Mapper.SaveObject(tmp);
         }
     }

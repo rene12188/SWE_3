@@ -47,8 +47,11 @@ namespace SWE3.ORM.MetaModel
 
 
                 FieldAttribute fattr = (FieldAttribute) i.GetCustomAttribute(typeof(FieldAttribute));
+              
 
-                if(fattr != null)
+
+
+                if (fattr != null)
                 {
                     if(fattr is PrimaryKeyAttribute)
                     {
@@ -58,10 +61,22 @@ namespace SWE3.ORM.MetaModel
 
                     field.ColumnName = (fattr?.ColumnName ?? i.Name);
                     field.ColumnType = (fattr?.ColumnType ?? i.PropertyType);
-
                     field.IsNullable = fattr.Nullable;
 
-                    field.IsSingleForeignKey = (fattr is SingleForeignKeyAttribute);
+                    if (fattr is SingleForeignKeyAttribute)
+                    {
+                        field.IsSingleForeignKey = true;
+                        field.ColumnName = (fattr?.ColumnName ?? i.Name);
+                        field.ColumnType = (fattr?.ColumnType ?? i.PropertyType);
+                    }
+
+                    if (fattr is MultipleForeignKeyAttribute)
+                    {
+
+                        continue;
+                        
+                    }
+
                 }
                 else
                 {

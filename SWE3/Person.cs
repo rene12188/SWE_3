@@ -23,7 +23,7 @@ namespace SWE3.Demo.SampleApp
         [Field(ColumnName = "BDATE")]
         public DateTime BirthDate { get; set; }
 
-        public Gender Gender { get; set; }
+        public int IsMale { get; set; }
 
         [Ignore]
         public int InstanceNumber { get; protected set; } = _N++;

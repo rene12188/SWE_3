@@ -21,7 +21,7 @@ namespace SWE3.Demo.SampleApp
 
             Class1.SaveTeacher();
             
-           // SaveClassWTeacher.SaveTeacher();
+            SaveClassWTeacher.SaveTeacher();
 
             /*  Type type = tmp.GetType();
               var props = type.GetProperties();
