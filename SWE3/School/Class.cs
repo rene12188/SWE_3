@@ -1,8 +1,7 @@
-﻿using System;
-using SWE3.ORM;
+﻿using System.Collections.Generic;
+using SWE3.ORM.Attributes;
 
-
-namespace SWE3.Demo.SampleApp.School
+namespace SWE3.ExampleProject.School
 {
     /// <summary>This class represents a class in the school model.</summary>
     [Entity(TableName = "CLASSES")]
@@ -27,5 +26,7 @@ namespace SWE3.Demo.SampleApp.School
         {
             get; set;
         }
+
+        public List<Student> Students;
     }
 }

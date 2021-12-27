@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWE3.ORM;
+using SWE3.ORM.Attributes;
 
-
-namespace SWE3.Demo.SampleApp.School
+namespace SWE3.ExampleProject.School
 {
     /// <summary>This is a teacher implementation (from School example).</summary>
     [Entity(TableName = "TEACHERS")]
@@ -20,5 +19,7 @@ namespace SWE3.Demo.SampleApp.School
         [Field(ColumnName = "HDATE")]
         /// <summary>Gets or sets the teacher's hire date.</summary>
         public DateTime HireDate { get; set; }
+
+        public IList<Class> Classes { get; set; }
     }
 }

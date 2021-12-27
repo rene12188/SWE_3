@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SWE3.Demo.SampleApp;
+using SWE3.ExampleProject.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleProject.Show.OLD
 {
     public static class Class1
     {
@@ -20,7 +16,7 @@ namespace SWE3.ExampleProject.Show
             tmp.FirstName = "John";
             tmp.ID = "if19b09888";
 
-            tmp.IsMale = 1;
+
             Mapper.SaveObject(tmp);
         }
     }

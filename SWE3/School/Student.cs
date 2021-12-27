@@ -1,8 +1,6 @@
-﻿using System;
-using SWE3.ORM;
+﻿using SWE3.ORM.Attributes;
 
-
-namespace SWE3.Demo.SampleApp.School
+namespace SWE3.ExampleProject.School
 {
     /// <summary>This is a student implementation (from School example).</summary>
     [Entity(TableName = "STUDENTS")]

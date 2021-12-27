@@ -1,8 +1,7 @@
 ﻿using System;
-using SWE3.ORM;
+using SWE3.ORM.Attributes;
 
-
-namespace SWE3.Demo.SampleApp.School
+namespace SWE3.ExampleProject.School
 {
     /// <summary>This is a person implementation (from School example).</summary>
     public abstract class Person
@@ -39,7 +38,7 @@ namespace SWE3.Demo.SampleApp.School
 
 
         /// <summary>Gets or sets the person gender.</summary>
-        public Gender Gender { get; set; }
+        public bool IsMale { get; set; }
 
 
         /// <summary>Gets the instance number.</summary>

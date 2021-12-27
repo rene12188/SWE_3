@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 
-namespace SWE3.ORM
+namespace SWE3.ORM.Attributes
 {
     /// <summary>This attribute marks a class as an entity.</summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using SWE3.ORM;
+﻿using System.Collections.Generic;
+using SWE3.ORM.Attributes;
 
-
-namespace SWE3.Demo.SampleApp.School
+namespace SWE3.ExampleProject.School
 {
     /// <summary>This class represents a course in the school model.</summary>
     [Entity(TableName = "COURSES")]
@@ -25,5 +23,7 @@ namespace SWE3.Demo.SampleApp.School
         /// <summary>Gets or sets the course teacher.</summary>
         [SingleForeignKey(ColumnName = "KTEACHER")]
         public Teacher Teacher { get; set; }
+
+        public IList<Student> Students { get; set; }
     }
 }

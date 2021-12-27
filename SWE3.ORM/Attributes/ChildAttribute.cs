@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SWE3.ORM
+namespace SWE3.ORM.Attributes
 {
     /// <summary>This attribute marks a member as a field.</summary>
     public class ChildAttribute: Attribute

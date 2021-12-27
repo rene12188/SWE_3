@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Npgsql;
+using SWE3.ORM.Attributes;
 using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
@@ -46,15 +43,12 @@ namespace SWE3.ORM
                 parent = ent;
 
                 if(!_GetGeneralisationAttribute(parent.Member))
-                    Console.WriteLine(InsertTextBuilder(ent, obj));
+                    InsertTextBuilder(ent, obj);
             }
 
             Console.WriteLine(types);
             return false;
 
-
-
-            return false;
         }
 
       /*  public static  T Get<T>(string ID)
@@ -183,6 +177,7 @@ namespace SWE3.ORM
 
 
             string cmdtxt = $"INSERT INTO {ent.TableName} {fields} Values {values} ;";
+            Console.WriteLine(cmdtxt);
             return cmdtxt;
         }
 
