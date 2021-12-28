@@ -1,57 +1,68 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using SWE3.ORM.Attributes;
+
 
 namespace SWE3.ORM.MetaModel
 {
     /// <summary>This class holds entity metadata.</summary>
     internal class __Entity
     {
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // private members                                                                                                  //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>Local internals array.</summary>
+        private __Field[] _LocalInternals = null;
+
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // constructors                                                                                                     //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         /// <summary>Creates a new instance of this class.</summary>
         /// <param name="t">Type.</param>
-        public __Entity(Type t , __Entity parent)
+        public __Entity(Type t)
         {
-            EntityAttribute tattr = (EntityAttribute) t.GetCustomAttribute(typeof(EntityAttribute));
-            if((tattr == null) || (string.IsNullOrWhiteSpace(tattr.TableName)))
+            EntityAttribute tattr = (EntityAttribute)t.GetCustomAttribute(typeof(EntityAttribute));
+            if (tattr == null)
             {
-                TableName = t.Name.ToUpper();
+                MaterialAttribute mattr = (MaterialAttribute)t.GetCustomAttribute(typeof(MaterialAttribute));
+                if (mattr != null)
+                {
+                    TableName = mattr.TableName;
+                    SubsetQuery = mattr.SubsetQuery;
+                    IsMaterial = true;
+                }
             }
-            else { TableName = tattr.TableName; }
+            else
+            {
+                TableName = tattr.TableName;
+                SubsetQuery = tattr.SubsetQuery;
+                ChildKey = tattr.ChildKey;
+            }
+
+            if (string.IsNullOrWhiteSpace(TableName)) { TableName = t.Name.ToUpper(); }
 
             Member = t;
             List<__Field> fields = new List<__Field>();
 
-            foreach(PropertyInfo i in t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly
-                | System.Reflection.BindingFlags.DeclaredOnly))
+            foreach (PropertyInfo i in t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
-                if((IgnoreAttribute) i.GetCustomAttribute(typeof(IgnoreAttribute)) != null) continue;
-                //if ((SingleForeignKeyAttribute)i.GetCustomAttribute(typeof(SingleForeignKeyAttribute)) != null) continue;
+                if ((IgnoreAttribute)i.GetCustomAttribute(typeof(IgnoreAttribute)) != null) continue;
 
                 __Field field = new __Field(this);
 
-
-                if ((ChildAttribute) i.GetCustomAttribute(typeof(ChildAttribute)) != null)
-                {
-                    field.GiveToChild = true;
-                }
-
-
-                FieldAttribute fattr = (FieldAttribute) i.GetCustomAttribute(typeof(FieldAttribute));
-              
-
-
+                FieldAttribute fattr = (FieldAttribute)i.GetCustomAttribute(typeof(FieldAttribute));
 
                 if (fattr != null)
                 {
-                    if(fattr is PrimaryKeyAttribute)
+                    if (fattr is PrimaryKeyAttribute)
                     {
                         PrimaryKey = field;
                         field.IsPrimaryKey = true;
@@ -59,66 +70,36 @@ namespace SWE3.ORM.MetaModel
 
                     field.ColumnName = (fattr?.ColumnName ?? i.Name);
                     field.ColumnType = (fattr?.ColumnType ?? i.PropertyType);
+
                     field.IsNullable = fattr.Nullable;
 
-                    if (fattr is SingleForeignKeyAttribute)
+                    if (field.IsForeignKey)
                     {
-                        field.IsSingleForeignKey = true;
-                        field.ColumnName = (fattr?.ColumnName ?? i.Name);
-                        field.ColumnType = (fattr?.ColumnType ?? i.PropertyType);
+                      /*var tmp=  ((ForeignKeyAttribute)i.GetCustomAttribute(typeof(ForeignKeyAttribute))
+                      
+                      
+                      field.IsExternal = typeof(IEnumerable).IsAssignableFrom(i.PropertyType);
+
+                        field.AssignmentTable = (fattr).AssignmentTable;
+                        field.RemoteColumnName = ((ForeignKeyAttribute)fattr).RemoteColumnName;
+                        field.IsManyToMany = (!string.IsNullOrWhiteSpace(field.AssignmentTable));*/
                     }
-
-                    if (fattr is MultipleForeignKeyAttribute)
-                    {
-
-                        continue;
-                        
-                    }
-
                 }
                 else
                 {
-                    if((i.GetGetMethod() == null) || (!i.GetGetMethod().IsPublic)) continue;
+                    if ((i.GetGetMethod() == null) || (!i.GetGetMethod().IsPublic)) continue;
 
                     field.ColumnName = i.Name;
                     field.ColumnType = i.PropertyType;
                 }
-
                 field.Member = i;
 
                 fields.Add(field);
             }
 
-            if (parent == null)
-            {
-                Fields = fields.ToArray();
-            }
-            else
-            {
-                bool generalised = Mapper._GetGeneralisationAttribute(parent.Member);
-                foreach (__Field var in parent.Fields)
-                { 
-
-                    if (var.GiveToChild || generalised)
-                    {
-                        fields.Add(var);
-                        
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
-
-                }
-
-              
-            }
             Fields = fields.ToArray();
-
             Internals = fields.Where(m => (!m.IsExternal)).ToArray();
-            Externals = fields.Where(m => (!m.IsInternal)).ToArray();
-
+            Externals = fields.Where(m => m.IsExternal).ToArray();
         }
 
 
@@ -126,7 +107,7 @@ namespace SWE3.ORM.MetaModel
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public properties                                                                                                //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         /// <summary>Gets the member type.</summary>
         public Type Member
         {
@@ -141,24 +122,75 @@ namespace SWE3.ORM.MetaModel
         }
 
 
+        /// <summary>Gets the subset query.</summary>
+        public string SubsetQuery
+        {
+            get; private set;
+        }
+
+
         /// <summary>Gets the entity fields.</summary>
         public __Field[] Fields
         {
             get; private set;
         }
 
-        public __Field[] Internals
-        {
-            get; private set;
-        }
 
+        /// <summary>Gets external fields.</summary>
+        /// <remarks>External fields are referenced fields that do not belong to the underlying table.</remarks>
         public __Field[] Externals
         {
             get; private set;
         }
 
+
+        /// <summary>Gets internal fields.</summary>
+        public __Field[] Internals
+        {
+            get; private set;
+        }
+
+
+        /// <summary>Gets internal fields that belong to the local entity table.</summary>
+        public __Field[] LocalInternals
+        {
+            get
+            {
+                if (_LocalInternals == null)
+                {
+                    __Entity bse = Member.BaseType._GetEntity();
+                    if (!bse.IsMaterial) { return Internals; }
+
+                    List<__Field> rval = new List<__Field>();
+                    foreach (__Field i in Internals)
+                    {
+                        if (bse.Internals.Where(m => m.ColumnName == i.ColumnName).Count() == 0) { rval.Add(i); }
+                    }
+
+                    _LocalInternals = rval.ToArray();
+                }
+
+                return _LocalInternals;
+            }
+        }
+
+
         /// <summary>Gets the entity primary key.</summary>
         public __Field PrimaryKey
+        {
+            get; private set;
+        }
+
+
+        /// <summary>Gets the foreign key that references master table.</summary>
+        public string ChildKey
+        {
+            get; private set;
+        }
+
+
+        /// <summary>Gets if the entity is a material base class.</summary>
+        public bool IsMaterial
         {
             get; private set;
         }
@@ -170,34 +202,56 @@ namespace SWE3.ORM.MetaModel
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /// <summary>Gets the entity SQL.</summary>
-        /// <param name="prefix">Prefix.</param>
         /// <returns>SQL string.</returns>
-        public string GetSQL(string prefix = null)
+        public string GetSQL()
         {
-            if(prefix == null)
-            {
-                prefix = "";
-            }
+            __Entity bse = Member.BaseType._GetEntity();
 
             string rval = "SELECT ";
-            for(int i = 0; i < Fields.Length; i++)
+            for (int i = 0; i < Internals.Length; i++)
             {
-                if(i > 0) { rval += ", "; }
-                rval += prefix.Trim() + Fields[i].ColumnName;
+                if (i > 0) { rval += ", "; }
+                rval += Internals[i].ColumnName;
             }
             rval += (" FROM " + TableName);
+
+            if (bse.IsMaterial)
+            {
+                rval += " INNER JOIN " + bse.TableName + " ON " + PrimaryKey.ColumnName + " = " + ChildKey;
+            }
+
+            if (!string.IsNullOrWhiteSpace(SubsetQuery))
+            {
+                rval += " WHERE (" + SubsetQuery + ")";
+            }
 
             return rval;
         }
 
-        public __Field GetFieldforColumn(string column)
-        {
-            column = column.ToUpper();
 
+        /// <summary>Gets a field by its column name.</summary>
+        /// <param name="columnName">Column name.</param>
+        /// <returns>Field.</returns>
+        public __Field GetFieldForColumn(string columnName)
+        {
+            columnName = columnName.ToUpper();
             foreach (__Field i in Internals)
             {
-                if (i.ColumnName.ToUpper() == column) return i;
+                if (i.ColumnName.ToUpper() == columnName) { return i; }
+            }
 
+            return null;
+        }
+
+
+        /// <summary>Gets a field by its field name.</summary>
+        /// <param name="fieldName">Field name.</param>
+        /// <returns>Field.</returns>
+        public __Field GetFieldByName(string fieldName)
+        {
+            foreach (__Field i in Fields)
+            {
+                if (i.Member.Name == fieldName) { return i; }
             }
 
             return null;

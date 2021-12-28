@@ -20,7 +20,7 @@ namespace SWE3.ExampleProject.Show
             c.Name = "Demonolgy 101";
             c.Teacher = t;
 
-            Mapper.Save(c);
+            Mapper.SaveObject(c);
 
             c = Mapper.Get<Class>("c.0");
             Console.WriteLine((c.Teacher.Salary == 50000) + c.Teacher.Name + " teaches " + c.Name + ".");

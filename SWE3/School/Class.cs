@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using SWE3.ORM;
 using SWE3.ORM.Attributes;
 
 namespace SWE3.ExampleProject.School
@@ -7,6 +7,28 @@ namespace SWE3.ExampleProject.School
     [Entity(TableName = "CLASSES")]
     public class Class
     {
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // constructors                                                                                                     //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        /// <summary>Creates a new instance of this class.</summary>
+        public Class()
+        {
+            Students = new LazyList<Student>(this, "Students");
+        }
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // private properties                                                                                               //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>Gets or sets the teacher with lazy loading.</summary>
+        [ForeignKey(ColumnName = "KTEACHER")]
+        private LazyObject<Teacher> _Teacher { get; set; } = new LazyObject<Teacher>();
+
+
+        
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // public properties                                                                                                //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,12 +43,19 @@ namespace SWE3.ExampleProject.School
 
 
         /// <summary>Gets or sets the class teacher.</summary>
-        [SingleForeignKey(ColumnName = "KTEACHER")]
+        [Ignore]
         public Teacher Teacher
+        {
+            get { return _Teacher.Value; }
+            set { _Teacher.Value = value; }
+        }
+
+
+        /// <summary>Gets the class students.</summary>
+        [ForeignKey(ColumnName = "KCLASS")]
+        public LazyList<Student> Students
         {
             get; set;
         }
-
-        public List<Student> Students;
     }
 }

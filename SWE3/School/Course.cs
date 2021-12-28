@@ -21,9 +21,12 @@ namespace SWE3.ExampleProject.School
 
 
         /// <summary>Gets or sets the course teacher.</summary>
-        [SingleForeignKey(ColumnName = "KTEACHER")]
+        [ForeignKey(ColumnName = "KTEACHER")]
         public Teacher Teacher { get; set; }
 
-        public IList<Student> Students { get; set; }
+
+        /// <summary>Gets or sets the students in this course.</summary>
+        [ForeignKey(AssignmentTable = "STUDENT_COURSES", ColumnName = "KCOURSE", RemoteColumnName = "KSTUDENT")]
+        public List<Student> Students { get; set; } = new List<Student>();
     }
 }

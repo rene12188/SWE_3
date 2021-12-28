@@ -23,7 +23,7 @@ namespace SWE3.ExampleProject.Show
 
             Console.WriteLine("Salary for " + t.FirstName + " " + t.Name + " is now " + t.Salary.ToString() + " Pesos.");
 
-            Mapper.Save(t);
+            Mapper.SaveObject(t);
 
             Console.WriteLine("\n");
         }

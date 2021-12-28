@@ -38,7 +38,7 @@ namespace SWE3.ExampleProject.School
 
 
         /// <summary>Gets or sets the person gender.</summary>
-        public bool IsMale { get; set; }
+        public Gender Gender { get; set; }
 
 
         /// <summary>Gets the instance number.</summary>

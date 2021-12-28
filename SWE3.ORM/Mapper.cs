@@ -12,79 +12,174 @@ namespace SWE3.ORM
 
         private static Dictionary<Type, __Entity> _Entities = new Dictionary<Type, __Entity>();
 
-        internal static NpgsqlConnection __conn = null;
+        public static NpgsqlConnection __conn = null;
+
+        public static DbLocking Locking { get; set; }
+
         /*public Mapper(NpgsqlConnection conn)
+{
+__conn = conn;
+}*/
+
+        public static T Get<T>(object pk)
         {
-            __conn = conn;
-        }*/
-        public static bool SaveObject(object obj)
-        {
-            List<Type> types = new List<Type>();
-            
-            __Entity parent = null;
-            Type type = obj.GetType();
-            while (type.Name != "Object")
-            {
-                types.Add(type);
-                type = type.BaseType;
-
-
-
-            }
-
-            types.Reverse();
-
-
-
-            foreach (var tp in types)
-            {
-                var ent = new __Entity(tp, parent);
-
-                parent = ent;
-
-                if(!_GetGeneralisationAttribute(parent.Member))
-                    InsertTextBuilder(ent, obj);
-            }
-
-            Console.WriteLine(types);
-            return false;
-
+            return (T)_CreateObject(typeof(T), pk, null);
         }
 
-      /*  public static  T Get<T>(string ID)
+        internal static object _CreateObject(Type t, IDataReader re, ICollection<object> localCache)
         {
-
-            return new T();
-        }*/
-
-
-        public static object _CreateObject(Type t, IDataReader re, ICollection<object> localcache)
-        {
-
             __Entity ent = t._GetEntity();
-            object rval = _SearchCache(t, re.GetValue(re.GetOrdinal(ent.PrimaryKey.ColumnName)), localcache);
+            object rval = _SearchCache(t,
+                ent.PrimaryKey.ToFieldType(re.GetValue(re.GetOrdinal(ent.PrimaryKey.ColumnName)), localCache),
+                localCache);
 
             if (rval == null)
             {
-                if (localcache == null)
+                if (localCache == null)
                 {
-                    localcache = new List<object>();
+                    localCache = new List<object>();
                 }
-                localcache.Add(Activator.CreateInstance(t));
+
+                localCache.Add(rval = Activator.CreateInstance(t));
+            }
+
+            foreach (__Field i in ent.Internals)
+            {
+                i.SetValue(rval, i.ToFieldType(re.GetValue(re.GetOrdinal(i.ColumnName)), localCache));
+            }
+
+            foreach (__Field i in ent.Externals)
+            {
+                if (typeof(ILazy).IsAssignableFrom(i.Type))
+                {
+                    i.SetValue(rval, Activator.CreateInstance(i.Type, rval, i.Member.Name));
+                }
+                else
+                {
+                    i.SetValue(rval, i.Fill(Activator.CreateInstance(i.Type), rval, localCache));
+                }
             }
 
             return rval;
+        }
 
-            //old
-            /*
-            object rval = Activator.CreateInstance(t);
-        
-            foreach (__Field i in t._GetEntity().Fields)
+  
+        public static void SaveObject(object obj)
+        {
+            __Entity ent = obj._GetEntity();
+            __Entity bse = obj.GetType().BaseType._GetEntity();
+
+            if (bse.IsMaterial) { SaveObject(obj, bse, false, true); }
+            SaveObject(obj, ent, bse.IsMaterial, false);
+        }
+
+        private static void SaveObject(object obj, __Entity ent, bool hasMaterialBase, bool isBase)
+        {
+            if (Cache != null) { if (!Cache.HasChanged(obj)) return; }
+
+            IDbCommand cmd = __conn.CreateCommand();
+            string update = "";
+            string insert = "";
+            cmd.CommandText = ("INSERT INTO " + ent.TableName + " (");
+            if (hasMaterialBase)
             {
-                i.SetValue(rval, i.ToFieldType(re.GetValue(re.GetOrdinal(i.ColumnName))));
+                cmd.CommandText += ent.ChildKey + ", ";
+                update = "ON CONFLICT (" + ent.ChildKey + ") DO UPDATE SET ";
+                insert = (":ck, ");
+
+                IDataParameter k = cmd.CreateParameter();
+                k.ParameterName = ":ck";
+                k.Value = ent.PrimaryKey.GetValue(obj);
+                cmd.Parameters.Add(k);
+            }
+            else
+            {
+                update = "ON CONFLICT (" + ent.PrimaryKey.ColumnName + ") DO UPDATE SET ";
             }
 
-            return rval;*/
+
+            IDataParameter p;
+            bool first = true;
+            for (int i = 0; i < ent.LocalInternals.Length; i++)
+            {
+                if (i > 0) { cmd.CommandText += ", "; insert += ", "; }
+                cmd.CommandText += ent.LocalInternals[i].ColumnName;
+
+                insert += (":v" + i.ToString());
+
+                p = cmd.CreateParameter();
+                p.ParameterName = (":v" + i.ToString());
+                p.Value = ent.LocalInternals[i].ToColumnType(ent.LocalInternals[i].GetValue(obj));
+                cmd.Parameters.Add(p);
+
+                if (!ent.LocalInternals[i].IsPrimaryKey)
+                {
+                    if (first) { first = false; } else { update += ", "; }
+                    update += (ent.LocalInternals[i].ColumnName + " = " + (":w" + i.ToString()));
+
+                    p = cmd.CreateParameter();
+                    p.ParameterName = (":w" + i.ToString());
+                    p.Value = ent.LocalInternals[i].ToColumnType(ent.LocalInternals[i].GetValue(obj));
+                    cmd.Parameters.Add(p);
+                }
+            }
+            cmd.CommandText += (") VALUES (" + insert + ") " + update);
+
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
+
+            if (!isBase) foreach (__Field i in ent.Externals) { i.UpdateReferences(obj); }
+
+            if (Cache != null) { Cache.Put(obj); }
+        }
+        public static void Lock(object obj)
+        {
+            if (Locking != null) { Locking.Lock(obj); }
+        }
+
+        public static ICache Cache { get; set; }
+
+        internal static Type[] _GetChildTypes(this Type t)
+        {
+            List<Type> rval = new List<Type>();
+            foreach (Type i in _Entities.Keys)
+            {
+                if (t.IsAssignableFrom(i) && (!i.IsAbstract)) { rval.Add(i); }
+            }
+
+            return rval.ToArray();
+        }
+
+        internal static object _CreateObject(Type t, object pk, ICollection<object> localCache)
+        {
+            object rval = null;
+            int locc = ((localCache != null) ? localCache.Count : 0);
+
+            IDbCommand cmd = __conn.CreateCommand();
+
+            __Entity ent = t._GetEntity();
+            cmd.CommandText = ent.GetSQL() + (string.IsNullOrWhiteSpace(ent.SubsetQuery) ? " WHERE " : " AND ") + t._GetEntity().PrimaryKey.ColumnName + " = :pk";
+
+            IDataParameter p = cmd.CreateParameter();
+            p.ParameterName = (":pk");
+            p.Value = pk;
+            cmd.Parameters.Add(p);
+
+            IDataReader re = cmd.ExecuteReader();
+            if (re.Read())
+            {
+                rval = _CreateObject(t, re, localCache);
+            }
+
+            re.Close();
+            cmd.Dispose();
+
+            if (Cache != null)
+            {
+                if ((localCache != null) && (localCache.Count > locc)) Cache.Put(rval);
+            }
+
+            return rval;
         }
         internal static __Entity _GetEntity(this object o)
         {
@@ -92,7 +187,7 @@ namespace SWE3.ORM
 
             if (!_Entities.ContainsKey(t))
             {
-                _Entities.Add(t, new __Entity(t, null));
+                _Entities.Add(t, new __Entity(t));
             }
 
             return _Entities[t];
@@ -121,64 +216,40 @@ namespace SWE3.ORM
 
         }
 
-        public static bool _GetGeneralisationAttribute(Type t)
+        internal static void _FillList(Type t, object list, IDataReader re, ICollection<object> localCache = null)
         {
-            // Get instance of the attribute.
-            GeneralisatinAttribute MyAttribute =
-                (GeneralisatinAttribute)Attribute.GetCustomAttribute(t, typeof(GeneralisatinAttribute));
-            if (MyAttribute != null)
-                return true;
-
-
-            return false;
+            while (re.Read())
+            {
+                list.GetType().GetMethod("Add").Invoke(list, new object[] { _CreateObject(t, re, localCache) });
+            }
         }
 
-      
-
-    
 
 
-    internal static string InsertTextBuilder(__Entity ent, object obj)
-    {   
-            int singlepropcount = 0;
-            int fieldnumber = ent.Fields.Length;
+        /// <summary>Fills a list.</summary>
+        /// <param name="t">Type.</param>
+        /// <param name="list">List.</param>
+        /// <param name="sql">SQL query.</param>
+        /// <param name="parameters">Parameters.</param>
+        /// <param name="localCache">Local cache.</param>
+        internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters, ICollection<object> localCache = null)
+        {
+            IDbCommand cmd = __conn.CreateCommand();
+            cmd.CommandText = sql;
 
-            string fields = "(";
-
-            string values = "(";
-
-            for (int i = 0; i < ent.Fields.Length; i++)
+            foreach (Tuple<string, object> i in parameters)
             {
-                fields += ent.Fields[i].ColumnName.ToString();
-
-                if (ent.Fields[i].IsSingleForeignKey)
-                {
-
-                   var tmp =  ent.Fields[i].ToColumnType(ent.Fields[i].GetValue(obj));
-                   SaveObject(tmp);
-                   values += "'" + tmp.ToString() + "'";
-                }
-                else
-                {
-                    values += "'" + ent.Fields[i].ToColumnType(ent.Fields[i].GetValue(obj)) + "'";
-                }
-               
-
-                if (i == ent.Fields.Length - 1)
-                {
-                    break;
-                }
-                fields += ",";
-                values += ",";
+                IDataParameter p = cmd.CreateParameter();
+                p.ParameterName = i.Item1;
+                p.Value = i.Item2;
+                cmd.Parameters.Add(p);
             }
 
-            fields += ")";
-            values += ")";
-
-
-            string cmdtxt = $"INSERT INTO {ent.TableName} {fields} Values {values} ;";
-            Console.WriteLine(cmdtxt);
-            return cmdtxt;
+            IDataReader re = cmd.ExecuteReader();
+            _FillList(t, list, re, localCache);
+            re.Close();
+            re.Dispose();
+            cmd.Dispose();
         }
 
 

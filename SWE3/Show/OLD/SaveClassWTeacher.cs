@@ -16,7 +16,7 @@ namespace SWE3.ExampleProject.Show.OLD
             tmp.FirstName = "John";
             tmp.ID = "if19b09888";
 
-            tmp.IsMale = true;
+        
 
             Class newclass = new Class();
             newclass.Name = "Kleine Klasse";

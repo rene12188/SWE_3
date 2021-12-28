@@ -6,7 +6,7 @@ namespace SWE3.ExampleProject.Show
     public class WithFKList
     {
         /// <summary>This show case loads a teacher with a list of classes.</summary>
-        public static void Show()
+     /*   public static void Show()
         {
             Console.WriteLine("(4) Load teacher and show classes");
             Console.WriteLine("---------------------------------");
@@ -21,6 +21,7 @@ namespace SWE3.ExampleProject.Show
             }
 
             Console.WriteLine("\n");
-        }
+        }*/
     }
 }
+

@@ -16,10 +16,13 @@ namespace SWE3.ExampleProject.School
         public int Salary { get; set; }
 
 
-        [Field(ColumnName = "HDATE")]
         /// <summary>Gets or sets the teacher's hire date.</summary>
+        [Field(ColumnName = "HDATE")]
         public DateTime HireDate { get; set; }
 
-        public IList<Class> Classes { get; set; }
+
+        /// <summary>Gets the teacher's courses.</summary>
+        [ForeignKey(ColumnName = "KTEACHER")]
+        public List<Class> Classes { get; private set; } = new List<Class>();
     }
 }

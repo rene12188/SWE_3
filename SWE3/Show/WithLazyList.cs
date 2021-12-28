@@ -17,7 +17,7 @@ namespace SWE3.ExampleProject.Show
             c.Students.Add(Mapper.Get<Student>("s.0"));
             c.Students.Add(Mapper.Get<Student>("s.1"));
 
-            Mapper.Save(c);
+            Mapper.SaveObject(c);
 
             c = Mapper.Get<Class>("c.0");
 

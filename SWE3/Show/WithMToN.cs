@@ -25,7 +25,7 @@ namespace SWE3.ExampleProject.Show
 
             s.BirthDate = new DateTime(1990, 1, 12);
             s.Grade = 1;
-            Mapper.Save(s);
+            Mapper.SaveObject(s);
 
             c.Students.Add(s);
 
@@ -36,11 +36,11 @@ namespace SWE3.ExampleProject.Show
 
             s.BirthDate = new DateTime(1991, 9, 23);
             s.Grade = 2;
-            Mapper.Save(s);
+            Mapper.SaveObject(s);
 
             c.Students.Add(s);
 
-            Mapper.Save(c);
+            Mapper.SaveObject(c);
 
             c = Mapper.Get<Course>("x.0");
 
