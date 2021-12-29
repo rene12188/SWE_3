@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
-using SWE3.ORM.MetaModel;
+using SWE3.OrmFramework.MetaModel;
 
-namespace SWE3.ORM
+namespace SWE3.OrmFramework
 {
     /// <summary>This class implements a database-based locking mechanism.</summary>
     public class DbLocking: ILocking
@@ -18,12 +18,12 @@ namespace SWE3.ORM
 
             try
             {
-                IDbCommand cmd = Mapper.__conn.CreateCommand();
+                IDbCommand cmd = Mapper.Connection.CreateCommand();
                 cmd.CommandText = "CREATE TABLE LOCKS (JCLASS VARCHAR(48) NOT NULL, JOBJECT VARCHAR(48) NOT NULL, JTIME TIMESTAMP NOT NULL, JOWNER VARCHAR(48) NOT NULL)";
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
-                cmd = Mapper.__conn.CreateCommand();
+                cmd = Mapper.Connection.CreateCommand();
                 cmd.CommandText = "CREATE UNIQUE INDEX UX_LOCKS ON LOCKS(JCLASS, JOBJECT)";
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
@@ -55,7 +55,7 @@ namespace SWE3.ORM
             var keys = _GetKeys(obj);
             string rval = null;
 
-            IDbCommand cmd = Mapper.__conn.CreateCommand();
+            IDbCommand cmd = Mapper.Connection.CreateCommand();
             cmd.CommandText = "SELECT JOWNER FROM LOCKS WHERE JCLASS = :c AND JOBJECT = :o";
 
             IDataParameter p = cmd.CreateParameter();
@@ -87,7 +87,7 @@ namespace SWE3.ORM
         {
             var keys = _GetKeys(obj);
             
-            IDbCommand cmd = Mapper.__conn.CreateCommand();
+            IDbCommand cmd = Mapper.Connection.CreateCommand();
             cmd.CommandText = "INSERT INTO LOCKS(JCLASS, JOBJECT, JTIME, JOWNER) VALUES (:c, :o, Current_Timestamp, :s)";
 
             IDataParameter p = cmd.CreateParameter();
@@ -142,7 +142,7 @@ namespace SWE3.ORM
         /// <summary>Purges timed out locks.</summary>
         public void Purge()
         {
-            IDbCommand cmd = Mapper.__conn.CreateCommand();
+            IDbCommand cmd = Mapper.Connection.CreateCommand();
             cmd.CommandText = "DELETE FROM LOCKS WHERE ((JulianDay(Current_Timestamp) - JulianDay(JTIME)) * 86400) > :t";
 
             IDataParameter p = cmd.CreateParameter();
@@ -174,7 +174,7 @@ namespace SWE3.ORM
                 owner = _GetLock(obj);
             }
 
-            if(owner != SessionKey) { throw new Exception(); }
+            if(owner != SessionKey) { throw new ObjectLockedException(); }
         }
 
 
@@ -184,7 +184,7 @@ namespace SWE3.ORM
         {
             var keys = _GetKeys(obj);
 
-            IDbCommand cmd = Mapper.__conn.CreateCommand();
+            IDbCommand cmd = Mapper.Connection.CreateCommand();
             cmd.CommandText = "DELETE FROM LOCKS WHERE JCLASS = :c AND JOBJECT = :o AND JOWNER = :s";
 
             IDataParameter p = cmd.CreateParameter();

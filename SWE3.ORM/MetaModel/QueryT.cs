@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SWE3.ORM.MetaModel
+namespace SWE3.OrmFramework.MetaModel
 {
     /// <summary>This class represents a query.</summary>
     /// <typeparam name="T">Type.</typeparam>

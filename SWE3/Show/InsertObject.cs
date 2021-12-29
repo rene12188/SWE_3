@@ -1,6 +1,7 @@
 ﻿using System;
 using SWE3.ExampleProject.School;
-using SWE3.ORM;
+
+using SWE3.OrmFramework;
 
 namespace SWE3.ExampleProject.Show
 {

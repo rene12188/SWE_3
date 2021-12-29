@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,7 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SWE3.ORM\SWE3.ORM.csproj" />
+
+    <ProjectReference Include="..\SWE3.ORM\SWE3.OrmFramework.csproj" />
   </ItemGroup>
 
 </Project>

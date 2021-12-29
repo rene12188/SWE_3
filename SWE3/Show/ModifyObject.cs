@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using SWE3.ExampleProject.School;
-using SWE3.ORM;
+
+using SWE3.OrmFramework;
 
 namespace SWE3.ExampleProject.Show
 {
@@ -12,9 +14,10 @@ namespace SWE3.ExampleProject.Show
         {
             Console.WriteLine("(2) Load and modify object");
             Console.WriteLine("--------------------------");
-
+            Mapper.Connection.Close();
+            Mapper.Connection.Open();
             Teacher t = Mapper.Get<Teacher>("t.0");
-
+            Thread.Sleep(100);
             Console.WriteLine();
             Console.WriteLine("Salary for " + t.FirstName + " " + t.Name + " is " + t.Salary.ToString() + " Pesos.");
 

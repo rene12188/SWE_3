@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWE3.ExampleProject", "SWE3.ExampleProject.csproj", "{204B588F-B907-42AB-A443-61F40E033699}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWE3.ORM", "..\SWE3.ORM\SWE3.ORM.csproj", "{E871224C-5E44-4F2B-8051-D5E26CC808A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWE3.OrmFramework", "..\SWE3.ORM\SWE3.OrmFramework.csproj", "{9563BEE0-2DD7-4F76-BFB5-0470B46D8397}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{204B588F-B907-42AB-A443-61F40E033699}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{204B588F-B907-42AB-A443-61F40E033699}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{204B588F-B907-42AB-A443-61F40E033699}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E871224C-5E44-4F2B-8051-D5E26CC808A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E871224C-5E44-4F2B-8051-D5E26CC808A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E871224C-5E44-4F2B-8051-D5E26CC808A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E871224C-5E44-4F2B-8051-D5E26CC808A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9563BEE0-2DD7-4F76-BFB5-0470B46D8397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9563BEE0-2DD7-4F76-BFB5-0470B46D8397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9563BEE0-2DD7-4F76-BFB5-0470B46D8397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9563BEE0-2DD7-4F76-BFB5-0470B46D8397}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

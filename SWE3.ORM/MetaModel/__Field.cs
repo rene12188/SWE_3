@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 
-namespace SWE3.ORM.MetaModel
+namespace SWE3.OrmFramework.MetaModel
 {
     /// <summary>This class holds field metadata.</summary>
     internal class __Field
@@ -262,7 +262,7 @@ namespace SWE3.ORM.MetaModel
 
             if(IsManyToMany)
             {
-                IDbCommand cmd = Mapper.__conn.CreateCommand();
+                IDbCommand cmd = Mapper.Connection.CreateCommand();
                 cmd.CommandText = ("DELETE FROM " + AssignmentTable + " WHERE " + ColumnName + " = :pk");
                 IDataParameter p = cmd.CreateParameter();
                 p.ParameterName = ":pk";
@@ -274,7 +274,7 @@ namespace SWE3.ORM.MetaModel
 
                 foreach(object i in (IEnumerable) GetValue(obj))
                 {
-                    cmd = Mapper.__conn.CreateCommand();
+                    cmd = Mapper.Connection.CreateCommand();
                     cmd.CommandText = ("INSERT INTO " + AssignmentTable + "(" + ColumnName + ", " + RemoteColumnName + ") VALUES (:pk, :fk)");
                     p = cmd.CreateParameter();
                     p.ParameterName = ":pk";
@@ -298,7 +298,7 @@ namespace SWE3.ORM.MetaModel
                 {
                     try
                     {
-                        IDbCommand cmd = Mapper.__conn.CreateCommand();
+                        IDbCommand cmd = Mapper.Connection.CreateCommand();
                         cmd.CommandText = ("UPDATE " + innerEntity.TableName + " SET " + ColumnName + " = NULL WHERE " + ColumnName + " = :fk");
                         IDataParameter p = cmd.CreateParameter();
                         p.ParameterName = ":fk";
@@ -315,7 +315,7 @@ namespace SWE3.ORM.MetaModel
                 {
                     remoteField.SetValue(i, obj);
 
-                    IDbCommand cmd = Mapper.__conn.CreateCommand();
+                    IDbCommand cmd = Mapper.Connection.CreateCommand();
                     cmd.CommandText = ("UPDATE " + innerEntity.TableName + " SET " + ColumnName + " = :fk WHERE " + innerEntity.PrimaryKey.ColumnName + " = :pk");
                     IDataParameter p = cmd.CreateParameter();
                     p.ParameterName = ":fk";
@@ -334,3 +334,4 @@ namespace SWE3.ORM.MetaModel
         }
     }
 }
+ 
