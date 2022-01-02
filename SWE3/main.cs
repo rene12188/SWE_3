@@ -9,8 +9,9 @@ namespace SWE3.ExampleProject
     {
         public static void Main()
         {
-            Mapper.Connection = new NpgsqlConnection("Server=127.0.0.1;Port=5432;User Id=postgres;Password=a;Database=swe3;");
-            Mapper.Connection.Open();
+            Mapper.Connectionstring = "Server=127.0.0.1;Port=5432;User Id=postgres;Password=a;Database=swe3;";
+            
+            
             InsertObject.Show();
             Thread.Sleep(10);
             ModifyObject.Show();

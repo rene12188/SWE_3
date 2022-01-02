@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
+using Npgsql;
 using SWE3.OrmFramework.MetaModel;
 
 namespace SWE3.OrmFramework
@@ -10,12 +12,26 @@ namespace SWE3.OrmFramework
 
         private static Dictionary<Type, __Entity> _Entities = new Dictionary<Type, __Entity>();
 
+        public static string Connectionstring;
+
+        public static NpgsqlConnection Connection
+        {
+            get
+            {
+                var tmp  = new NpgsqlConnection(Connectionstring);
+                tmp.Open();
+                return tmp;
+
+            }
+            set
+            {
+
+                Connection = value;
+            }
+        }
 
 
-        public static IDbConnection Connection { get; set; }
 
-
-     
         public static ICache Cache { get; set; }
 
         public static ILocking Locking { get; set; }

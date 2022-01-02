@@ -14,8 +14,6 @@ namespace SWE3.ExampleProject.Show
         {
             Console.WriteLine("(2) Load and modify object");
             Console.WriteLine("--------------------------");
-            Mapper.Connection.Close();
-            Mapper.Connection.Open();
             Teacher t = Mapper.Get<Teacher>("t.0");
             Thread.Sleep(100);
             Console.WriteLine();

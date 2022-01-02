@@ -7,11 +7,7 @@ namespace SWE3.OrmFramework
     /// <summary>This class implements a database-based locking mechanism.</summary>
     public class DbLocking: ILocking
     {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // constructors                                                                                                     //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Creates a new instance of this class.</summary>
+
         public DbLocking()
         {
             SessionKey = Guid.NewGuid().ToString();
@@ -32,14 +28,6 @@ namespace SWE3.OrmFramework
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private methods                                                                                                  //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets class and object key for an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Returns a tuple containing class and object key.</returns>
         private (string ClassKey, string ObjectKey) _GetKeys(object obj)
         {
             __Entity ent = obj._GetEntity();
@@ -47,9 +35,6 @@ namespace SWE3.OrmFramework
         }
 
 
-        /// <summary>Gets the current lock owner for an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Owner key.</returns>
         private string _GetLock(object obj)
         {
             var keys = _GetKeys(obj);
@@ -81,8 +66,6 @@ namespace SWE3.OrmFramework
         }
 
 
-        /// <summary>Creates a lock on an object.</summary>
-        /// <param name="obj">Object.</param>
         private void _CreateLock(object obj)
         {
             var keys = _GetKeys(obj);
@@ -114,13 +97,6 @@ namespace SWE3.OrmFramework
             cmd.Dispose();
         }
 
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public properties                                                                                                //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets this session's key.</summary>
         public string SessionKey
         {
             get; private set;
@@ -132,14 +108,8 @@ namespace SWE3.OrmFramework
         {
             get; set;
         } = 180;
-
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public methods                                                                                                   //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
-        /// <summary>Purges timed out locks.</summary>
+        
         public void Purge()
         {
             IDbCommand cmd = Mapper.Connection.CreateCommand();
@@ -155,14 +125,6 @@ namespace SWE3.OrmFramework
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // [interface] ILocking                                                                                             //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Locks an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <exception cref="ObjectLockedException">Thrown when the object is already locked by another instance.</exception>
         public virtual void Lock(object obj)
         {
             string owner = _GetLock(obj);
@@ -178,8 +140,7 @@ namespace SWE3.OrmFramework
         }
 
 
-        /// <summary>Releases a lock on an object.</summary>
-        /// <param name="obj">Object.</param>
+      
         public virtual void Release(object obj)
         {
             var keys = _GetKeys(obj);
