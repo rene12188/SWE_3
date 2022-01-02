@@ -2,7 +2,7 @@
 
 namespace SWE3.OrmFramework
 {
-    /// <summary>This attribute marks a property to be ignored.</summary>
+    // Use this attribute to ignore a Property or Field
     public class IgnoreAttribute: Attribute
     {}
 }

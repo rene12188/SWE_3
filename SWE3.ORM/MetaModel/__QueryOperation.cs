@@ -1,6 +1,6 @@
 ﻿namespace SWE3.OrmFramework.MetaModel
 {
-    /// <summary>This enumeration defines query operations.</summary>
+    /// Definition for QueryOperation
     internal enum __QueryOperation: int
     {
         NOP     =  0,

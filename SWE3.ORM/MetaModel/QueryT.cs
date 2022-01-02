@@ -26,26 +26,13 @@ namespace SWE3.OrmFramework.MetaModel
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // constructors                                                                                                     //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Creates a new instance of this class.</summary>
-        /// <param name="previous">Previous query.</param>
         internal Query(Query<T> previous)
         {
             _Previous = previous;
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private properties                                                                                               //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
-        /// <summary>Fills the object.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="localCache">Local cache.</param>
         private void _Fill(Type t, ICollection<object> localCache)
         {
             List<Query<T>> ops = new List<Query<T>>();
@@ -165,16 +152,7 @@ namespace SWE3.OrmFramework.MetaModel
             }
         }
 
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private methods                                                                                                  //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Sets the object operation and arguments and returns a new Query.</summary>
-        /// <param name="op">Operation.</param>
-        /// <param name="args">Arguments.</param>
-        /// <returns>Query.</returns>
+        
         private Query<T> _SetOp(__QueryOperation op, params object[] args)
         {
             _Op = op;
@@ -184,12 +162,7 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public methods                                                                                                   //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Adds a not operation to the query.</summary>
-        /// <returns>Query.</returns>
+      
         public Query<T> Not()
         {
             return _SetOp(__QueryOperation.NOT);
@@ -204,56 +177,34 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
-        /// <summary>Adds an or operation to the query.</summary>
-        /// <returns>Query.</returns>
         public Query<T> Or()
         {
             return _SetOp(__QueryOperation.OR);
         }
 
-
-        /// <summary>Adds a begin group operation to the query.</summary>
-        /// <returns>Query.</returns>
         public Query<T> BeginGroup()
         {
             return _SetOp(__QueryOperation.GRP);
         }
 
-
-        /// <summary>Adds an end group operation to the query.</summary>
-        /// <returns>Query.</returns>
         public Query<T> EndGroup()
         {
             return _SetOp(__QueryOperation.ENDGRP);
         }
 
-
-        /// <summary>Adds an equals operation to the query.</summary>
-        /// <param name="field">Field name.</param>
-        /// <param name="value">Value.</param>
-        /// <param name="ignoreCase">String comparison ignore case flag.</param>
-        /// <returns>Query.</returns>
         public Query<T> Equals(string field, object value, bool ignoreCase = false)
         {
             return _SetOp(__QueryOperation.EQUALS, field, value, ignoreCase);
         }
 
 
-        /// <summary>Adds a like operation to the query.</summary>
-        /// <param name="field">Field name.</param>
-        /// <param name="value">Value.</param>
-        /// <param name="ignoreCase">String comparison ignore case flag.</param>
-        /// <returns>Query.</returns>
         public Query<T> Like(string field, object value, bool ignoreCase = false)
         {
             return _SetOp(__QueryOperation.LIKE, field, value, ignoreCase);
         }
 
 
-        /// <summary>Adds an in operation to the query.</summary>
-        /// <param name="field">Field name.</param>
-        /// <param name="values">Values.</param>
-        /// <returns>Query.</returns>
+   
         public Query<T> In(string field, params object[] values)
         {
             List<object> v = new List<object>(values);
@@ -262,54 +213,30 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
-        /// <summary>Adds a greater than operation to the query.</summary>
-        /// <param name="field">Field name.</param>
-        /// <param name="values">Values.</param>
-        /// <returns>Query.</returns>
         public Query<T> GreaterThan(string field, object value)
         {
             return _SetOp(__QueryOperation.GT, field, value);
         }
 
 
-        /// <summary>Adds a greater than operation to the query.</summary>
-        /// <param name="field">Field name.</param>
-        /// <param name="values">Values.</param>
-        /// <returns>Query.</returns>
         public Query<T> LessThan(string field, object value)
         {
             return _SetOp(__QueryOperation.LT, field, value);
         }
 
 
-        /// <summary>Returns a list for the query results.</summary>
-        /// <returns>List.</returns>
         public List<T> ToList()
         {
             return new List<T>(_Values);
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // [interface] IEnumerable<T>                                                                                       //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Returns an enumerator for this object.</summary>
-        /// <returns>Enumerator.</returns>
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return _Values.GetEnumerator();
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // [interface] IEnumerable                                                                                          //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Returns an enumerator for this object.</summary>
-        /// <returns>Enumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _Values.GetEnumerator();

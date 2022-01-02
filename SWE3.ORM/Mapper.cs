@@ -18,16 +18,15 @@ namespace SWE3.OrmFramework
         {
             get
             {
+                if (Connectionstring == null)
+                    throw new NoNullAllowedException("Please fill the Database Connectionstring");
+                //Create new Connection for an Operation
                 var tmp  = new NpgsqlConnection(Connectionstring);
                 tmp.Open();
                 return tmp;
 
             }
-            set
-            {
-
-                Connection = value;
-            }
+            set => Connection = value;
         }
 
 
@@ -90,14 +89,6 @@ namespace SWE3.OrmFramework
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private static methods                                                                                           //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Gets an entity descriptor for an object.</summary>
-        /// <param name="o">Object.</param>
-        /// <returns>Entity.</returns>
         internal static __Entity _GetEntity(this object o)
         {
             Type t = ((o is Type) ? (Type) o :o.GetType());
@@ -111,9 +102,7 @@ namespace SWE3.OrmFramework
         }
 
 
-        /// <summary>Gets child framework types for a type.</summary>
-        /// <param name="t">Type.</param>
-        /// <returns>Child types.</returns>
+      
         internal static Type[] _GetChildTypes(this Type t)
         {
             List<Type> rval = new List<Type>();
@@ -126,17 +115,11 @@ namespace SWE3.OrmFramework
         }
 
 
-
-        /// <summary>Searches the cached objects for an object and returns it.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="pk">Primary key.</param>
-        /// <param name="objects">Cached objects.</param>
-        /// <returns>Returns the cached object that matches the current reader or NULL if no such object has been found.</returns>
         internal static object _SearchCache(Type t, object pk, ICollection<object> localCache)
         {
-            if((Cache != null) && Cache.Contains(t, pk))
+            if((Cache != null) && Cache.Find(t, pk))
             {
-                return Cache.Get(t, pk);
+                return Cache.Read(t, pk);
             }
 
             if(localCache != null)
@@ -152,12 +135,6 @@ namespace SWE3.OrmFramework
             return null;
         }
 
-
-        /// <summary>Creates an object from a database reader.</summary>
-        /// <typeparam name="T">Type.</typeparam>
-        /// <param name="re">Reader.</param>
-        /// <param name="localCache">Local cache.</param>
-        /// <returns>Object.</returns>
         internal static object _CreateObject(Type t, IDataReader re, ICollection<object> localCache)
         {
             __Entity ent = t._GetEntity();
@@ -190,11 +167,6 @@ namespace SWE3.OrmFramework
         }
 
 
-        /// <summary>Creates an instance by its primary keys.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="pk">Primary key.</param>
-        /// <param name="localCache">Local cache.</param>
-        /// <returns>Object.</returns>
         internal static object _CreateObject(Type t, object pk, ICollection<object> localCache)
         {
             object rval = null;
@@ -221,18 +193,13 @@ namespace SWE3.OrmFramework
 
             if(Cache != null) 
             { 
-                if((localCache != null) && (localCache.Count > locc)) Cache.Put(rval); 
+                if((localCache != null) && (localCache.Count > locc)) Cache.Create(rval); 
             }
 
             return rval;
         }
 
 
-        /// <summary>Fills a list.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="list">List.</param>
-        /// <param name="re">Reader.</param>
-        /// <param name="localCache">Local cache.</param>
         internal static void _FillList(Type t, object list, IDataReader re, ICollection<object> localCache = null)
         {
             while(re.Read())
@@ -242,13 +209,6 @@ namespace SWE3.OrmFramework
         }
 
 
-
-        /// <summary>Fills a list.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="list">List.</param>
-        /// <param name="sql">SQL query.</param>
-        /// <param name="parameters">Parameters.</param>
-        /// <param name="localCache">Local cache.</param>
         internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters, ICollection<object> localCache = null)
         {
             IDbCommand cmd = Connection.CreateCommand();
@@ -270,10 +230,6 @@ namespace SWE3.OrmFramework
         }
 
 
-        /// <summary>Deletes an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <param name="ent">Entity.</param>
-        /// <param name="isBase">Determines if the entity is a base table.</param>
         private static void _Delete(object obj, __Entity ent, bool isBase)
         {
             IDbCommand cmd = Connection.CreateCommand();
@@ -285,15 +241,9 @@ namespace SWE3.OrmFramework
             cmd.ExecuteNonQuery();
             cmd.Dispose();
 
-            if(Cache != null) { Cache.Remove(obj); }
+            if(Cache != null) { Cache.Delete(obj); }
         }
 
-
-        /// <summary>Saves an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <param name="ent">Entity.</param>
-        /// <param name="hasMaterialBase">Determines if the base class table is material.</param>
-        /// <param name="isBase">Determines if the the object is the base class table.</param>
         private static void _Save(object obj, __Entity ent, bool hasMaterialBase, bool isBase)
         {
             if(Cache != null) { if(!Cache.HasChanged(obj)) return; }
@@ -351,7 +301,7 @@ namespace SWE3.OrmFramework
 
             if(!isBase) foreach(__Field i in ent.Externals) { i.UpdateReferences(obj); }
 
-            if(Cache != null) { Cache.Put(obj); }
+            if(Cache != null) { Cache.Create(obj); }
         }
     }
 }

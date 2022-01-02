@@ -17,7 +17,7 @@ namespace SWE3.ExampleProject.Show
             _ShowInstances();
 
             Console.WriteLine("\nWith cache:");
-            Mapper.Cache = new DefaultCache();
+            Mapper.Cache = new BasicCache();
             _ShowInstances();
         }
 

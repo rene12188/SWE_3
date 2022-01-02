@@ -5,22 +5,22 @@ namespace SWE3.OrmFramework
     public interface ICache
     {
    
-        object Get(Type t, object pk);
+        object Read(Type t, object pk);
 
 
      
-        void Put(object obj);
+        void Create(object obj);
         
 
-        void Remove(object obj);
+        void Delete(object obj);
 
 
    
-        bool Contains(Type t, object pk);
+        bool Find(Type t, object pk);
 
 
        
-        bool Contains(object obj);
+        bool Find(object obj);
 
 
       
