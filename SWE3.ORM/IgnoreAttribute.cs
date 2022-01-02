@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SWE3.OrmFramework
+namespace SWE3.ORM
 {
-    // Use this attribute to ignore a Property or Field
+    /// <summary>This attribute marks a property to be ignored.</summary>
     public class IgnoreAttribute: Attribute
     {}
 }

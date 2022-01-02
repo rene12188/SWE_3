@@ -1,7 +1,6 @@
 ﻿using System;
 using SWE3.ExampleProject.School;
-
-using SWE3.OrmFramework;
+using SWE3.ORM;
 
 namespace SWE3.ExampleProject.Show
 {
@@ -19,6 +18,7 @@ namespace SWE3.ExampleProject.Show
             t.ID = "t.0";
             t.FirstName = "Jerry";
             t.Name = "Mouse";
+            t.Gender = Gender.MALE;
             t.BirthDate = new DateTime(1970, 8, 18);
             t.HireDate = new DateTime(2015, 6, 20);
             t.Salary = 50000;

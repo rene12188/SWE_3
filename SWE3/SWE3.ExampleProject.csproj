@@ -6,12 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="5.0.10" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
   </ItemGroup>
 
   <ItemGroup>
-
-    <ProjectReference Include="..\SWE3.ORM\SWE3.OrmFramework.csproj" />
+    <ProjectReference Include="..\SWE3.ORM\SWE3.ORM.csproj" />
   </ItemGroup>
 
 </Project>

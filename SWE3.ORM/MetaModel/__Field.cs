@@ -4,18 +4,29 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 
-namespace SWE3.OrmFramework.MetaModel
+namespace SWE3.ORM.MetaModel
 {
     /// <summary>This class holds field metadata.</summary>
     internal class __Field
     {
-     
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // constructors                                                                                                     //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>Creates a new instance of this class.</summary>
+        /// <param name="entity">Parent entity.</param>
         public __Field(__Entity entity)
         {
             Entity = entity;
         }
 
-        
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // public properties                                                                                                //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>Gets the parent entity.</summary>
         public __Entity Entity
         {
             get; private set;
@@ -104,6 +115,12 @@ namespace SWE3.OrmFramework.MetaModel
         } = false;
 
 
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // internal properties                                                                                              //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        /// <summary>Gets the foreign key SQL.</summary>
         internal string _FkSql
         {
             get
@@ -120,6 +137,14 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // public methods                                                                                                   //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /// <summary>Returns a database column type equivalent for a field type value.</summary>
+        /// <param name="value">Value.</param>
+        /// <returns>Database type representation of the value.</returns>
         public object ToColumnType(object value)
         {
             if(IsForeignKey)
@@ -143,6 +168,9 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
+        /// <summary>Returns a field type equivalent for a database column type value.</summary>
+        /// <param name="value">Value.</param>
+        /// <returns>Field type representation of the value.</returns>
         public object ToFieldType(object value, ICollection<object> localCache)
         {
             if(IsForeignKey)
@@ -171,6 +199,9 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
+        /// <summary>Gets the field value.</summary>
+        /// <param name="obj">Object.</param>
+        /// <returns>Field value.</returns>
         public object GetValue(object obj)
         {
             if(Member is PropertyInfo) 
@@ -189,6 +220,9 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
+        /// <summary>Sets the field value.</summary>
+        /// <param name="obj">Object.</param>
+        /// <param name="value">Value.</param>
         public void SetValue(object obj, object value)
         {
             if(Member is PropertyInfo)
@@ -201,6 +235,11 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
+        /// <summary>Fills a list for a foreign key.</summary>
+        /// <param name="list">List.</param>
+        /// <param name="obj">Object.</param>
+        /// <param name="localCache">Local cache.</param>
+        /// <returns>List.</returns>
         public object Fill(object list, object obj, ICollection<object> localCache)
         {
             Mapper._FillList(Type.GenericTypeArguments[0], list, _FkSql,
@@ -210,6 +249,8 @@ namespace SWE3.OrmFramework.MetaModel
         }
 
 
+        /// <summary>Updates references.</summary>
+        /// <param name="obj">Object.</param>
         public void UpdateReferences(object obj)
         {
             if(!IsExternal) return;
@@ -293,4 +334,3 @@ namespace SWE3.OrmFramework.MetaModel
         }
     }
 }
- 

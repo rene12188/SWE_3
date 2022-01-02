@@ -1,4 +1,4 @@
-﻿using SWE3.OrmFramework;
+﻿using SWE3.ORM;
 
 namespace SWE3.ExampleProject.School
 {

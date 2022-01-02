@@ -1,6 +1,6 @@
 ﻿using System;
 using SWE3.ExampleProject.School;
-using SWE3.OrmFramework;
+using SWE3.ORM;
 
 namespace SWE3.ExampleProject.Show
 {
@@ -17,7 +17,7 @@ namespace SWE3.ExampleProject.Show
             _ShowInstances();
 
             Console.WriteLine("\nWith cache:");
-            Mapper.Cache = new BasicCache();
+            Mapper.Cache = new DefaultCache();
             _ShowInstances();
         }
 

@@ -1,7 +1,7 @@
 Drop TABLE TEACHERS CASCADE ;
 DROP TABLE CLASSES CASCADE ;
 DROP TABLE COURSES CASCADE ;
-DROP  TABLE STUDENT CASCADE ;
+DROP  TABLE STUDENTS CASCADE ;
 DROP TABLE STUDENT_COURSES CASCADE ;
 
 Create TABLE TEACHERS
@@ -10,7 +10,7 @@ Create TABLE TEACHERS
     NAME      varchar(64),
     FIRSTNAME varchar(64),
     BDATE     Timestamp,
-    ISMALE    boolean,
+    GENDER    integer,
     SALARY    integer,
     HDATE     timestamp
 );
@@ -32,7 +32,7 @@ CREATE TABLE COURSES(
 
 
 
-Create TABLE STUDENT(
+Create TABLE STUDENTS(
     ID varchar(64) PRIMARY KEY ,
     NAME varchar(64),
     FIRSTNAME varchar(64),

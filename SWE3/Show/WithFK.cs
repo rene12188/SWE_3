@@ -1,6 +1,6 @@
 ﻿using System;
 using SWE3.ExampleProject.School;
-using SWE3.OrmFramework;
+using SWE3.ORM;
 
 namespace SWE3.ExampleProject.Show
 {
@@ -23,7 +23,7 @@ namespace SWE3.ExampleProject.Show
             Mapper.SaveObject(c);
 
             c = Mapper.Get<Class>("c.0");
-            Console.WriteLine((c.Teacher.Salary == 50000) + c.Teacher.Name + " teaches " + c.Name + ".");
+            Console.WriteLine((c.Teacher.Gender == Gender.MALE ? "Mr. " : "Ms. ") + c.Teacher.Name + " teaches " + c.Name + ".");
 
             Console.WriteLine("\n");
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using SWE3.ExampleProject.School;
-
-using SWE3.OrmFramework;
+using SWE3.ORM;
 
 namespace SWE3.ExampleProject.Show
 {
@@ -23,7 +22,7 @@ namespace SWE3.ExampleProject.Show
             s.ID = "s.0";
             s.Name = "Aalo";
             s.FirstName = "Alice";
-
+            s.Gender = Gender.FEMALE;
             s.BirthDate = new DateTime(1990, 1, 12);
             s.Grade = 1;
             Mapper.SaveObject(s);
@@ -34,7 +33,7 @@ namespace SWE3.ExampleProject.Show
             s.ID = "s.1";
             s.Name = "Bumblebee";
             s.FirstName = "Bernard";
-
+            s.Gender = Gender.MALE;
             s.BirthDate = new DateTime(1991, 9, 23);
             s.Grade = 2;
             Mapper.SaveObject(s);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SWE3.OrmFramework.MetaModel
+namespace SWE3.ORM.MetaModel
 {
     /// <summary>This class holds entity metadata.</summary>
     internal class __Entity
