@@ -247,6 +247,8 @@ namespace SWE3.ORM
                 IDataParameter p = cmd.CreateParameter();
                 p.ParameterName = i.Item1;
                 p.Value = i.Item2;
+                if (p.Value == null)
+                    p.Value = DBNull.Value;
                 cmd.Parameters.Add(p);
             }
             __Entity modelEntity = t._GetEntity();
@@ -319,10 +321,14 @@ namespace SWE3.ORM
                 cmd.CommandText += ent.LocalInternals[i].ColumnName;
 
                 insert += (":v" + i.ToString());
-
+              
                 p = cmd.CreateParameter();
                 p.ParameterName = (":v" + i.ToString());
                 p.Value = ent.LocalInternals[i].ToColumnType(ent.LocalInternals[i].GetValue(obj));
+                if (p.Value == null)
+                {
+                    p.Value = DBNull.Value;
+                }
                 cmd.Parameters.Add(p);
 
                 if(!ent.LocalInternals[i].IsPrimaryKey)
@@ -333,6 +339,11 @@ namespace SWE3.ORM
                     p = cmd.CreateParameter();
                     p.ParameterName = (":w" + i.ToString());
                     p.Value = ent.LocalInternals[i].ToColumnType(ent.LocalInternals[i].GetValue(obj));
+                    if (p.Value == null)
+                    {
+                        p.Value = DBNull.Value;
+                    }
+
                     cmd.Parameters.Add(p);
                 }
             }

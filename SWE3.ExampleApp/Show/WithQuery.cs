@@ -14,7 +14,7 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine("-----------------------");
 
             Console.WriteLine("Students with grade > 1:");
-            foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1))
+        /*    foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1))
             {
                 Console.WriteLine(i.FirstName + " " + i.Name);
             }
@@ -23,7 +23,7 @@ namespace SWE3.ExampleApp.Show
             foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1).Or().Like("FirstName", "al%", true))
             {
                 Console.WriteLine(i.FirstName + " " + i.Name);
-            }
+            }*/
 
             Console.WriteLine("\nShow all persons:");
             foreach(Person i in Orm.From<Person>())
