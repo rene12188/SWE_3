@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case demonstrates working with simple foreign keys.</summary>
     public static class WithFK
@@ -13,16 +13,16 @@ namespace SWE3.ExampleProject.Show
             Console.WriteLine("(3) Create and load an object with foreign key");
             Console.WriteLine("----------------------------------------------");
 
-            Teacher t = Mapper.Get<Teacher>("t.0");
+            Teacher t = Orm.Get<Teacher>("t.0");
 
             Class c = new Class();
             c.ID = "c.0";
             c.Name = "Demonolgy 101";
             c.Teacher = t;
 
-            Mapper.SaveObject(c);
+            Orm.Save(c);
 
-            c = Mapper.Get<Class>("c.0");
+            c = Orm.Get<Class>("c.0");
             Console.WriteLine((c.Teacher.Gender == Gender.MALE ? "Mr. " : "Ms. ") + c.Teacher.Name + " teaches " + c.Name + ".");
 
             Console.WriteLine("\n");

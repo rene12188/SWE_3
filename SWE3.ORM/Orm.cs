@@ -6,70 +6,35 @@ using SWE3.ORM.MetaModel;
 namespace SWE3.ORM
 {
     /// <summary>This class allows access to OR framework functionalities.</summary>
-    public static class Mapper
+    public static class Orm
     {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private static members                                                                                           //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Entities.</summary>
+     
         private static Dictionary<Type, __Entity> _Entities = new Dictionary<Type, __Entity>();
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public static properties                                                                                         //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Gets or sets the database connection used by the framework.</summary>
-        ///
-        
-
-        public static IDbConnection Connection
-        {
-            get;
-            set;
-        }
+        public static IDbConnection Connection { get; set; }
 
 
-        /// <summary>Gets or sets the cache used by the framework.</summary>
         public static ICache Cache { get; set; }
 
 
-        /// <summary>Gets or sets the locking mechanism used by the framework.</summary>
         public static ILocking Locking { get; set; }
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public static methods                                                                                            //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets an object.</summary>
-        /// <typeparam name="T">Type.</typeparam>
-        /// <param name="pk">Primary key.</param>
-        /// <returns>Object.</returns>
         public static T Get<T>(object pk)
         {
             return (T) _CreateObject(typeof(T), pk, null);
         }
 
 
-        /// <summary>Returns a query for a class.</summary>
-        /// <typeparam name="T">Type.</typeparam>
-        /// <returns>Query.</returns>
         public static Query<T> From<T>()
         {
             return new Query<T>(null);
         }
 
 
-        /// <summary>Returns a list of objects for an SQL query.</summary>
-        /// <typeparam name="T">Type.</typeparam>
-        /// <param name="sql">SQL query.</param>
-        /// <param name="names">Parameter names.</param>
-        /// <param name="values">Parameter values.</param>
-        /// <returns></returns>
         public static List<T> FromSQL<T>(string sql, IEnumerable<string> names = null, IEnumerable<object> values = null)
         {
             List<T> rval = new List<T>();
@@ -91,27 +56,18 @@ namespace SWE3.ORM
         }
 
 
-
-        /// <summary>Locks an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <exception cref="ObjectLockedException">Thrown when the object is already locked by another instance.</exception>
         public static void Lock(object obj)
         {
             if(Locking != null) { Locking.Lock(obj); }
         }
 
 
-        /// <summary>Releases a lock on an object.</summary>
-        /// <param name="obj">Object.</param>
         public static void Release(object obj)
         {
             if(Locking != null) { Locking.Release(obj); }
         }
 
-
-        /// <summary>Saves an object.</summary>
-        /// <param name="obj">Object.</param>
-        public static void SaveObject(object obj)
+        public static void Save(object obj)
         {
             __Entity ent = obj._GetEntity();
             __Entity bse = obj.GetType().BaseType._GetEntity();
@@ -121,8 +77,6 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Deletes an object.</summary>
-        /// <param name="obj">Object.</param>
         public static void Delete(object obj)
         {
             __Entity ent = obj._GetEntity();
@@ -136,15 +90,6 @@ namespace SWE3.ORM
             else { _Delete(obj, ent, true); }
         }
 
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private static methods                                                                                           //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Gets an entity descriptor for an object.</summary>
-        /// <param name="o">Object.</param>
-        /// <returns>Entity.</returns>
         internal static __Entity _GetEntity(this object o)
         {
             Type t = ((o is Type) ? (Type) o :o.GetType());
@@ -157,10 +102,7 @@ namespace SWE3.ORM
             return _Entities[t];
         }
 
-
-        /// <summary>Gets child framework types for a type.</summary>
-        /// <param name="t">Type.</param>
-        /// <returns>Child types.</returns>
+        
         internal static Type[] _GetChildTypes(this Type t)
         {
             List<Type> rval = new List<Type>();
@@ -172,13 +114,7 @@ namespace SWE3.ORM
             return rval.ToArray();
         }
 
-
-
-        /// <summary>Searches the cached objects for an object and returns it.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="pk">Primary key.</param>
-        /// <param name="objects">Cached objects.</param>
-        /// <returns>Returns the cached object that matches the current reader or NULL if no such object has been found.</returns>
+        
         internal static object _SearchCache(Type t, object pk, ICollection<object> localCache)
         {
             if((Cache != null) && Cache.Contains(t, pk))
@@ -200,11 +136,7 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Creates an object from a database reader.</summary>
-        /// <typeparam name="T">Type.</typeparam>
-        /// <param name="re">Reader.</param>
-        /// <param name="localCache">Local cache.</param>
-        /// <returns>Object.</returns>
+       
         internal static object _CreateObject(Type t, IDataReader re, ICollection<object> localCache)
         {
             __Entity ent = t._GetEntity();
@@ -236,12 +168,7 @@ namespace SWE3.ORM
             return rval;
         }
 
-
-        /// <summary>Creates an instance by its primary keys.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="pk">Primary key.</param>
-        /// <param name="localCache">Local cache.</param>
-        /// <returns>Object.</returns>
+        
         internal static object _CreateObject(Type t, object pk, ICollection<object> localCache)
         {
             object rval = null;
@@ -275,11 +202,6 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Fills a list.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="list">List.</param>
-        /// <param name="re">Reader.</param>
-        /// <param name="localCache">Local cache.</param>
         internal static void _FillList(Type t, object list, IDataReader re, ICollection<object> localCache = null)
         {
             while(re.Read())
@@ -290,12 +212,6 @@ namespace SWE3.ORM
 
 
 
-        /// <summary>Fills a list.</summary>
-        /// <param name="t">Type.</param>
-        /// <param name="list">List.</param>
-        /// <param name="sql">SQL query.</param>
-        /// <param name="parameters">Parameters.</param>
-        /// <param name="localCache">Local cache.</param>
         internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters, ICollection<object> localCache = null)
         {
             IDbCommand cmd = Connection.CreateCommand();
@@ -306,13 +222,9 @@ namespace SWE3.ORM
                 IDataParameter p = cmd.CreateParameter();
                 p.ParameterName = i.Item1;
                 p.Value = i.Item2;
-                if (p.Value == null)
-                {
-                    throw new NullReferenceException();
-                }
                 cmd.Parameters.Add(p);
             }
-         
+
             IDataReader re = cmd.ExecuteReader();
             _FillList(t, list, re, localCache);
             re.Close();
@@ -321,10 +233,6 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Deletes an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <param name="ent">Entity.</param>
-        /// <param name="isBase">Determines if the entity is a base table.</param>
         private static void _Delete(object obj, __Entity ent, bool isBase)
         {
             IDbCommand cmd = Connection.CreateCommand();
@@ -340,11 +248,6 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Saves an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <param name="ent">Entity.</param>
-        /// <param name="hasMaterialBase">Determines if the base class table is material.</param>
-        /// <param name="isBase">Determines if the the object is the base class table.</param>
         private static void _Save(object obj, __Entity ent, bool hasMaterialBase, bool isBase)
         {
             if(Cache != null) { if(!Cache.HasChanged(obj)) return; }

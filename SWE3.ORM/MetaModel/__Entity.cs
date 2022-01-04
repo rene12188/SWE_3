@@ -6,24 +6,13 @@ using System.Reflection;
 
 namespace SWE3.ORM.MetaModel
 {
-    /// <summary>This class holds entity metadata.</summary>
+  
     internal class __Entity
     {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private members                                                                                                  //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Local internals array.</summary>
+      
         private __Field[] _LocalInternals = null;
 
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // constructors                                                                                                     //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Creates a new instance of this class.</summary>
-        /// <param name="t">Type.</param>
+        
         public __Entity(Type t)
         {
             EntityAttribute tattr = (EntityAttribute) t.GetCustomAttribute(typeof(EntityAttribute));
@@ -96,56 +85,39 @@ namespace SWE3.ORM.MetaModel
             Externals  = fields.Where(m => m.IsExternal).ToArray();
         }
 
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public properties                                                                                                //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets the member type.</summary>
         public Type Member
         {
             get; private set;
         }
 
 
-        /// <summary>Gets the table name.</summary>
         public string TableName
         {
             get; private set;
         }
 
 
-        /// <summary>Gets the subset query.</summary>
         public string SubsetQuery
         {
             get; private set;
         }
-
-
-        /// <summary>Gets the entity fields.</summary>
+        
         public __Field[] Fields
         {
             get; private set;
         }
 
-
-        /// <summary>Gets external fields.</summary>
-        /// <remarks>External fields are referenced fields that do not belong to the underlying table.</remarks>
         public __Field[] Externals
         {
             get; private set;
         }
 
-
-        /// <summary>Gets internal fields.</summary>
         public __Field[] Internals
         {
             get; private set;
         }
 
-
-        /// <summary>Gets internal fields that belong to the local entity table.</summary>
+        
         public __Field[] LocalInternals
         {
             get
@@ -169,21 +141,18 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        /// <summary>Gets the entity primary key.</summary>
         public __Field PrimaryKey
         {
             get; private set;
         }
 
 
-        /// <summary>Gets the foreign key that references master table.</summary>
         public string ChildKey
         {
             get; private set;
         }
 
 
-        /// <summary>Gets if the entity is a material base class.</summary>
         public bool IsMaterial
         {
             get; private set;
@@ -191,12 +160,6 @@ namespace SWE3.ORM.MetaModel
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public methods                                                                                                   //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Gets the entity SQL.</summary>
-        /// <returns>SQL string.</returns>
         public string GetSQL()
         {
             __Entity bse = Member.BaseType._GetEntity();
@@ -223,9 +186,6 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        /// <summary>Gets a field by its column name.</summary>
-        /// <param name="columnName">Column name.</param>
-        /// <returns>Field.</returns>
         public __Field GetFieldForColumn(string columnName)
         {
             columnName = columnName.ToUpper();
@@ -237,10 +197,6 @@ namespace SWE3.ORM.MetaModel
             return null;
         }
 
-
-        /// <summary>Gets a field by its field name.</summary>
-        /// <param name="fieldName">Field name.</param>
-        /// <returns>Field.</returns>
         public __Field GetFieldByName(string fieldName)
         {
             foreach(__Field i in Fields)

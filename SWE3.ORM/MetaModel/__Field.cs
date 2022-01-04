@@ -6,41 +6,27 @@ using System.Reflection;
 
 namespace SWE3.ORM.MetaModel
 {
-    /// <summary>This class holds field metadata.</summary>
     internal class __Field
     {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // constructors                                                                                                     //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Creates a new instance of this class.</summary>
-        /// <param name="entity">Parent entity.</param>
+   
         public __Field(__Entity entity)
         {
             Entity = entity;
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public properties                                                                                                //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Gets the parent entity.</summary>
         public __Entity Entity
         {
             get; private set;
         }
 
 
-        /// <summary>Gets the field member.</summary>
         public MemberInfo Member
         {
             get; internal set;
         }
 
 
-        /// <summary>Gets the field type.</summary>
         public Type Type
         {
             get
@@ -52,63 +38,53 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        /// <summary>Gets the column name in table.</summary>
         public string ColumnName
         {
             get; internal set;
         }
 
 
-        /// <summary>Gets the column database type.</summary>
         public Type ColumnType
         {
             get; internal set;
         }
 
 
-        /// <summary>Gets if the column is a primary key.</summary>
         public bool IsPrimaryKey
         {
             get; internal set;
         } = false;
 
 
-        /// <summary>Gets if the column is a foreign key.</summary>
         public bool IsForeignKey
         {
             get; internal set;
         } = false;
 
-
-        /// <summary>Assignment table.</summary>
+        
         public string AssignmentTable
         {
             get; internal set;
         }
 
 
-        /// <summary>Remote (far side) column name.</summary>
         public string RemoteColumnName
         {
             get; internal set;
         }
-
-
-        /// <summary>Gets if the field belongs to a m:n relationship.</summary>
+ 
         public bool IsManyToMany
         {
             get; internal set;
         }
 
-
-        /// <summary>Gets if the column is nullable.</summary>
+       
         public bool IsNullable
         {
             get; internal set;
         } = false;
 
-
-        /// <summary>Gets if the the column is an external foreign key field.</summary>
+        
         public bool IsExternal
         {
             get; internal set;
@@ -116,11 +92,6 @@ namespace SWE3.ORM.MetaModel
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // internal properties                                                                                              //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets the foreign key SQL.</summary>
         internal string _FkSql
         {
             get
@@ -138,13 +109,6 @@ namespace SWE3.ORM.MetaModel
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public methods                                                                                                   //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Returns a database column type equivalent for a field type value.</summary>
-        /// <param name="value">Value.</param>
-        /// <returns>Database type representation of the value.</returns>
         public object ToColumnType(object value)
         {
             if(IsForeignKey)
@@ -168,9 +132,6 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        /// <summary>Returns a field type equivalent for a database column type value.</summary>
-        /// <param name="value">Value.</param>
-        /// <returns>Field type representation of the value.</returns>
         public object ToFieldType(object value, ICollection<object> localCache)
         {
             if(IsForeignKey)
@@ -179,7 +140,7 @@ namespace SWE3.ORM.MetaModel
                 {
                     return Activator.CreateInstance(Type, value);
                 }
-                return Mapper._CreateObject(Type, value, localCache);
+                return Orm._CreateObject(Type, value, localCache);
             }
 
             if(Type == typeof(bool))
@@ -198,10 +159,7 @@ namespace SWE3.ORM.MetaModel
             return value;
         }
 
-
-        /// <summary>Gets the field value.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Field value.</returns>
+        
         public object GetValue(object obj)
         {
             if(Member is PropertyInfo) 
@@ -220,9 +178,6 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        /// <summary>Sets the field value.</summary>
-        /// <param name="obj">Object.</param>
-        /// <param name="value">Value.</param>
         public void SetValue(object obj, object value)
         {
             if(Member is PropertyInfo)
@@ -233,24 +188,17 @@ namespace SWE3.ORM.MetaModel
 
             throw new NotSupportedException("Member type not supported.");
         }
+        
 
-
-        /// <summary>Fills a list for a foreign key.</summary>
-        /// <param name="list">List.</param>
-        /// <param name="obj">Object.</param>
-        /// <param name="localCache">Local cache.</param>
-        /// <returns>List.</returns>
         public object Fill(object list, object obj, ICollection<object> localCache)
         {
-            Mapper._FillList(Type.GenericTypeArguments[0], list, _FkSql,
+            Orm._FillList(Type.GenericTypeArguments[0], list, _FkSql,
                           new Tuple<string, object>[] { new Tuple<string, object>(":fk", Entity.PrimaryKey.GetValue(obj)) }, localCache);
 
             return list;
         }
 
 
-        /// <summary>Updates references.</summary>
-        /// <param name="obj">Object.</param>
         public void UpdateReferences(object obj)
         {
             if(!IsExternal) return;
@@ -262,7 +210,7 @@ namespace SWE3.ORM.MetaModel
 
             if(IsManyToMany)
             {
-                IDbCommand cmd = Mapper.Connection.CreateCommand();
+                IDbCommand cmd = Orm.Connection.CreateCommand();
                 cmd.CommandText = ("DELETE FROM " + AssignmentTable + " WHERE " + ColumnName + " = :pk");
                 IDataParameter p = cmd.CreateParameter();
                 p.ParameterName = ":pk";
@@ -274,7 +222,7 @@ namespace SWE3.ORM.MetaModel
 
                 foreach(object i in (IEnumerable) GetValue(obj))
                 {
-                    cmd = Mapper.Connection.CreateCommand();
+                    cmd = Orm.Connection.CreateCommand();
                     cmd.CommandText = ("INSERT INTO " + AssignmentTable + "(" + ColumnName + ", " + RemoteColumnName + ") VALUES (:pk, :fk)");
                     p = cmd.CreateParameter();
                     p.ParameterName = ":pk";
@@ -298,7 +246,7 @@ namespace SWE3.ORM.MetaModel
                 {
                     try
                     {
-                        IDbCommand cmd = Mapper.Connection.CreateCommand();
+                        IDbCommand cmd = Orm.Connection.CreateCommand();
                         cmd.CommandText = ("UPDATE " + innerEntity.TableName + " SET " + ColumnName + " = NULL WHERE " + ColumnName + " = :fk");
                         IDataParameter p = cmd.CreateParameter();
                         p.ParameterName = ":fk";
@@ -315,7 +263,7 @@ namespace SWE3.ORM.MetaModel
                 {
                     remoteField.SetValue(i, obj);
 
-                    IDbCommand cmd = Mapper.Connection.CreateCommand();
+                    IDbCommand cmd = Orm.Connection.CreateCommand();
                     cmd.CommandText = ("UPDATE " + innerEntity.TableName + " SET " + ColumnName + " = :fk WHERE " + innerEntity.PrimaryKey.ColumnName + " = :pk");
                     IDataParameter p = cmd.CreateParameter();
                     p.ParameterName = ":fk";

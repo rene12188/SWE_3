@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case demonstrates locking.</summary>
     public static class WithLocking
@@ -14,15 +14,15 @@ namespace SWE3.ExampleProject.Show
             Console.WriteLine("-------------------------");
             Console.WriteLine();
 
-            Mapper.Locking = new DbLocking();
-            Teacher t = Mapper.Get<Teacher>("t.0");
-            Mapper.Lock(t);
+            Orm.Locking = new DbLocking();
+            Teacher t = Orm.Get<Teacher>("t.0");
+            Orm.Lock(t);
 
-            Mapper.Locking = new DbLocking();
+            Orm.Locking = new DbLocking();
 
             try
             {
-                Mapper.Lock(t);
+                Orm.Lock(t);
             }
             catch(Exception ex) { Console.WriteLine(ex.Message); }
         }

@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case loads and modifies an object and saves it to database.</summary>
     public static class ModifyObject
@@ -13,7 +13,7 @@ namespace SWE3.ExampleProject.Show
             Console.WriteLine("(2) Load and modify object");
             Console.WriteLine("--------------------------");
 
-            Teacher t = Mapper.Get<Teacher>("t.0");
+            Teacher t = Orm.Get<Teacher>("t.0");
 
             Console.WriteLine();
             Console.WriteLine("Salary for " + t.FirstName + " " + t.Name + " is " + t.Salary.ToString() + " Pesos.");
@@ -23,7 +23,7 @@ namespace SWE3.ExampleProject.Show
 
             Console.WriteLine("Salary for " + t.FirstName + " " + t.Name + " is now " + t.Salary.ToString() + " Pesos.");
 
-            Mapper.SaveObject(t);
+            Orm.Save(t);
 
             Console.WriteLine("\n");
         }

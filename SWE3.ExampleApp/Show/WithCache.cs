@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case demonstrates cache functionality.</summary>
     public static class WithCache
@@ -17,7 +17,7 @@ namespace SWE3.ExampleProject.Show
             _ShowInstances();
 
             Console.WriteLine("\nWith cache:");
-            Mapper.Cache = new DefaultCache();
+            Orm.Cache = new DefaultCache();
             _ShowInstances();
         }
 
@@ -27,7 +27,7 @@ namespace SWE3.ExampleProject.Show
         {
             for(int i = 0; i < 7; i++)
             {
-                Teacher t = Mapper.Get<Teacher>("t.0");
+                Teacher t = Orm.Get<Teacher>("t.0");
                 Console.WriteLine("Object [" + t.ID + "] instance no: " + t.InstanceNumber.ToString());
             }
         }

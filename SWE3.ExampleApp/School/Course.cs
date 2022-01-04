@@ -1,7 +1,7 @@
-﻿using SWE3.ORM;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SWE3.ORM;
 
-namespace SWE3.ExampleProject.School
+namespace SWE3.ExampleApp.School
 {
     /// <summary>This class represents a course in the school model.</summary>
     [Entity(TableName = "COURSES")]

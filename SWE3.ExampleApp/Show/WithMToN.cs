@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case uses an m:n relationship.</summary>
     public static class WithMToN
@@ -16,7 +16,7 @@ namespace SWE3.ExampleProject.Show
             Course c = new Course();
             c.ID = "x.0";
             c.Name = "Demons 1";
-            c.Teacher = Mapper.Get<Teacher>("t.0");
+            c.Teacher = Orm.Get<Teacher>("t.0");
 
             Student s = new Student();
             s.ID = "s.0";
@@ -25,7 +25,7 @@ namespace SWE3.ExampleProject.Show
             s.Gender = Gender.FEMALE;
             s.BirthDate = new DateTime(1990, 1, 12);
             s.Grade = 1;
-            Mapper.SaveObject(s);
+            Orm.Save(s);
 
             c.Students.Add(s);
 
@@ -36,13 +36,13 @@ namespace SWE3.ExampleProject.Show
             s.Gender = Gender.MALE;
             s.BirthDate = new DateTime(1991, 9, 23);
             s.Grade = 2;
-            Mapper.SaveObject(s);
+            Orm.Save(s);
 
             c.Students.Add(s);
 
-            Mapper.SaveObject(c);
+            Orm.Save(c);
 
-            c = Mapper.Get<Course>("x.0");
+            c = Orm.Get<Course>("x.0");
 
             Console.WriteLine("Students in " + c.Name + ":");
             foreach(Student i in c.Students)

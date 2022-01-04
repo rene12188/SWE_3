@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.School
+namespace SWE3.ExampleApp.School
 {
     /// <summary>This is a teacher implementation (from School example).</summary>
     [Entity(TableName = "TEACHERS")]

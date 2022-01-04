@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     public class WithFKList
     {
@@ -12,7 +12,7 @@ namespace SWE3.ExampleProject.Show
             Console.WriteLine("(4) Load teacher and show classes");
             Console.WriteLine("---------------------------------");
 
-            Teacher t = Mapper.Get<Teacher>("t.0");
+            Teacher t = Orm.Get<Teacher>("t.0");
 
             Console.WriteLine(t.FirstName + " " + t.Name + " teaches:");
 

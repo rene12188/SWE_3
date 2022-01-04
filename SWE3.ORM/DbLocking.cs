@@ -18,12 +18,12 @@ namespace SWE3.ORM
 
             try
             {
-                IDbCommand cmd = Mapper.Connection.CreateCommand();
+                IDbCommand cmd = Orm.Connection.CreateCommand();
                 cmd.CommandText = "CREATE TABLE LOCKS (JCLASS VARCHAR(48) NOT NULL, JOBJECT VARCHAR(48) NOT NULL, JTIME TIMESTAMP NOT NULL, JOWNER VARCHAR(48) NOT NULL)";
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
 
-                cmd = Mapper.Connection.CreateCommand();
+                cmd = Orm.Connection.CreateCommand();
                 cmd.CommandText = "CREATE UNIQUE INDEX UX_LOCKS ON LOCKS(JCLASS, JOBJECT)";
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
@@ -33,29 +33,19 @@ namespace SWE3.ORM
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // private methods                                                                                                  //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets class and object key for an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Returns a tuple containing class and object key.</returns>
+    
         private (string ClassKey, string ObjectKey) _GetKeys(object obj)
         {
             __Entity ent = obj._GetEntity();
             return (ent.TableName, ent.PrimaryKey.ToColumnType(ent.PrimaryKey.GetValue(obj)).ToString());
         }
 
-
-        /// <summary>Gets the current lock owner for an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Owner key.</returns>
         private string _GetLock(object obj)
         {
             var keys = _GetKeys(obj);
             string rval = null;
 
-            IDbCommand cmd = Mapper.Connection.CreateCommand();
+            IDbCommand cmd = Orm.Connection.CreateCommand();
             cmd.CommandText = "SELECT JOWNER FROM LOCKS WHERE JCLASS = :c AND JOBJECT = :o";
 
             IDataParameter p = cmd.CreateParameter();
@@ -80,14 +70,11 @@ namespace SWE3.ORM
             return rval;
         }
 
-
-        /// <summary>Creates a lock on an object.</summary>
-        /// <param name="obj">Object.</param>
         private void _CreateLock(object obj)
         {
             var keys = _GetKeys(obj);
             
-            IDbCommand cmd = Mapper.Connection.CreateCommand();
+            IDbCommand cmd = Orm.Connection.CreateCommand();
             cmd.CommandText = "INSERT INTO LOCKS(JCLASS, JOBJECT, JTIME, JOWNER) VALUES (:c, :o, Current_Timestamp, :s)";
 
             IDataParameter p = cmd.CreateParameter();
@@ -115,12 +102,6 @@ namespace SWE3.ORM
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public properties                                                                                                //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Gets this session's key.</summary>
         public string SessionKey
         {
             get; private set;
@@ -134,15 +115,9 @@ namespace SWE3.ORM
         } = 180;
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // public methods                                                                                                   //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Purges timed out locks.</summary>
         public void Purge()
         {
-            IDbCommand cmd = Mapper.Connection.CreateCommand();
+            IDbCommand cmd = Orm.Connection.CreateCommand();
             cmd.CommandText = "DELETE FROM LOCKS WHERE ((JulianDay(Current_Timestamp) - JulianDay(JTIME)) * 86400) > :t";
 
             IDataParameter p = cmd.CreateParameter();
@@ -156,13 +131,6 @@ namespace SWE3.ORM
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // [interface] ILocking                                                                                             //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Locks an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <exception cref="ObjectLockedException">Thrown when the object is already locked by another instance.</exception>
         public virtual void Lock(object obj)
         {
             string owner = _GetLock(obj);
@@ -177,14 +145,11 @@ namespace SWE3.ORM
             if(owner != SessionKey) { throw new ObjectLockedException(); }
         }
 
-
-        /// <summary>Releases a lock on an object.</summary>
-        /// <param name="obj">Object.</param>
         public virtual void Release(object obj)
         {
             var keys = _GetKeys(obj);
 
-            IDbCommand cmd = Mapper.Connection.CreateCommand();
+            IDbCommand cmd = Orm.Connection.CreateCommand();
             cmd.CommandText = "DELETE FROM LOCKS WHERE JCLASS = :c AND JOBJECT = :o AND JOWNER = :s";
 
             IDataParameter p = cmd.CreateParameter();

@@ -1,8 +1,8 @@
 ﻿using System.Data.SQLite;
-using SWE3.ExampleProject.Show;
+using SWE3.ExampleApp.Show;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject
+namespace SWE3.ExampleApp
 {
     /// <summary>This is the main program class for this sample application.</summary>
     class Program
@@ -15,12 +15,12 @@ namespace SWE3.ExampleProject
         /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
-            Mapper.Connection = new SQLiteConnection("Data Source=DB.sqlite;Version=3;");
-            Mapper.Connection.Open();
+            Orm.Connection = new SQLiteConnection("Data Source=test.sqlite;Version=3;");
+            Orm.Connection.Open();
 
-            Mapper.Cache = new TrackingCache();
+            Orm.Cache = new TrackingCache();
 
-            InsertObject.Show();
+            InsertObject.Show(); 
             ModifyObject.Show();
             WithFK.Show();
             WithFKList.Show();
@@ -30,7 +30,7 @@ namespace SWE3.ExampleProject
             WithQuery.Show();
             WithLocking.Show();
 
-            Mapper.Connection.Close();
+            Orm.Connection.Close();
         }
     }
 }

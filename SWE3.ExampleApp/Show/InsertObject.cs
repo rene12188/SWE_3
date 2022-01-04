@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case creates an object and saves it to database.</summary>
     public static class InsertObject
@@ -23,7 +23,7 @@ namespace SWE3.ExampleProject.Show
             t.HireDate = new DateTime(2015, 6, 20);
             t.Salary = 50000;
 
-            Mapper.SaveObject(t);
+            Orm.Save(t);
 
             Console.WriteLine("\n");
         }

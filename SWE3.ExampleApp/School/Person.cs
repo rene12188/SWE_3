@@ -1,7 +1,7 @@
 ﻿using System;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.School
+namespace SWE3.ExampleApp.School
 {
     /// <summary>This is a person implementation (from School example).</summary>
     public abstract class Person

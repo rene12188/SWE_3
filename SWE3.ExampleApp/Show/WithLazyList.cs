@@ -1,8 +1,8 @@
 ﻿using System;
-using SWE3.ExampleProject.School;
+using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE3.ExampleProject.Show
+namespace SWE3.ExampleApp.Show
 {
     /// <summary>This show case uses lazy loading.</summary>
     public static class WithLazyList
@@ -13,13 +13,13 @@ namespace SWE3.ExampleProject.Show
             Console.WriteLine("(6) Use Lazy loading for student list");
             Console.WriteLine("-------------------------------------");
 
-            Class c = Mapper.Get<Class>("c.0");
-            c.Students.Add(Mapper.Get<Student>("s.0"));
-            c.Students.Add(Mapper.Get<Student>("s.1"));
+            Class c = Orm.Get<Class>("c.0");
+            c.Students.Add(Orm.Get<Student>("s.0"));
+            c.Students.Add(Orm.Get<Student>("s.1"));
 
-            Mapper.SaveObject(c);
+            Orm.Save(c);
 
-            c = Mapper.Get<Class>("c.0");
+            c = Orm.Get<Class>("c.0");
 
             Console.WriteLine("Students in " + c.Name + ":");
             foreach(Student i in c.Students)

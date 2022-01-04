@@ -7,25 +7,13 @@ using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
 {
-    /// <summary>This class provides a change-tracking cache implementation.</summary>
     public class TrackingCache: DefaultCache, ICache
     {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // protected members                                                                                                //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Hash items.</summary>
+       
         protected Dictionary<Type, Dictionary<object, string>> _Hashes = new Dictionary<Type, Dictionary<object, string>>();
 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // protected methods                                                                                                //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Gets the hash store for a type.</summary>
-        /// <param name="t">Type.</param>
-        /// <returns>Type hash store.</returns>
         protected virtual Dictionary<object, string> _GetHash(Type t)
         {
             if(_Hashes.ContainsKey(t)) { return _Hashes[t]; }
@@ -36,10 +24,6 @@ namespace SWE3.ORM
             return rval;
         }
 
-
-        /// <summary>Gets a hash for an object.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Hash.</returns>
         protected string _ComputeHash(object obj)
         {
             string rval = "";
@@ -75,13 +59,6 @@ namespace SWE3.ORM
         }
 
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // [override] DefaultCache                                                                                          //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /// <summary>Puts an object into the cache.</summary>
-        /// <param name="obj">Object.</param>
         public override void Put(object obj)
         {
             base.Put(obj);
@@ -89,18 +66,12 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Removes an object from the cache.</summary>
-        /// <param name="obj">Object.</param>
         public override void Remove(object obj)
         {
             base.Remove(obj);
             _GetHash(obj.GetType()).Remove(obj._GetEntity().PrimaryKey.GetValue(obj));
         }
 
-
-        /// <summary>Gets if an object has changed.</summary>
-        /// <param name="obj">Object.</param>
-        /// <returns>Returns TRUE if the object has changed or might have changed, returns FALSE if the object is unchanged.</returns>
         public override bool HasChanged(object obj)
         {
             Dictionary<object, string> h = _GetHash(obj.GetType());
