@@ -22,7 +22,7 @@ namespace SWE3.ExampleApp
 
             InsertObject.Show(); 
             ModifyObject.Show();
-            //WithFK.Show();
+            WithFK.Show();
             WithFKList.Show();
             WithMToN.Show();
            // WithLazyList.Show();

@@ -19,10 +19,11 @@ namespace SWE3.ExampleApp.Show
             c.ID = "c.0";
             c.Name = "Demonolgy 101";
             c.Teacher = t;
+            t.Classes.Add(c); 
 
-            Orm.Save(c);
+            Orm.Save(t);
 
-            c = Orm.Get<Class>("c.0");
+            t = Orm.Get<Teacher>("t.0");
             Console.WriteLine((c.Teacher.Gender == 1 ? "Mr. " : "Ms. ") + c.Teacher.Name + " teaches " + c.Name + ".");
 
             Console.WriteLine("\n");

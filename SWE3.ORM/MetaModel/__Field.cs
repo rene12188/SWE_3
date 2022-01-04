@@ -21,7 +21,7 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        public MemberInfo Member
+        public PropertyInfo Member
         {
             get; internal set;
         }
@@ -162,6 +162,8 @@ namespace SWE3.ORM.MetaModel
         
         public object GetValue(object obj)
         {
+
+          //  return Member.GetValue(obj);
             if(Member is PropertyInfo) 
             {
                 object rval = ((PropertyInfo) Member).GetValue(obj);

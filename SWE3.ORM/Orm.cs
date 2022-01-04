@@ -164,7 +164,7 @@ namespace SWE3.ORM
         {
             object resultValue = Cache.Get(type, primaryKey);
 
-            if (resultValue != null)
+            if (resultValue == null)
             {
                 IDbCommand command = Connection.CreateCommand();
                 __Entity modelEntity = type._GetEntity();
