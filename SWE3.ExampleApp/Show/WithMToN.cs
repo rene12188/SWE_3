@@ -22,7 +22,7 @@ namespace SWE3.ExampleApp.Show
             s.ID = "s.0";
             s.Name = "Aalo";
             s.FirstName = "Alice";
-            s.Gender = Gender.FEMALE;
+            s.Gender = 1;
             s.BirthDate = new DateTime(1990, 1, 12);
             s.Grade = 1;
             Orm.Save(s);
@@ -33,7 +33,7 @@ namespace SWE3.ExampleApp.Show
             s.ID = "s.1";
             s.Name = "Bumblebee";
             s.FirstName = "Bernard";
-            s.Gender = Gender.MALE;
+            s.Gender = 1;
             s.BirthDate = new DateTime(1991, 9, 23);
             s.Grade = 2;
             Orm.Save(s);

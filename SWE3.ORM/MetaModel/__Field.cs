@@ -140,7 +140,7 @@ namespace SWE3.ORM.MetaModel
                 {
                     return Activator.CreateInstance(Type, value);
                 }
-                return Orm._CreateObject(Type, value, localCache);
+                return Orm.InitObject(Type, value);
             }
 
             if(Type == typeof(bool))

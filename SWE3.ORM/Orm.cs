@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Npgsql;
 using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
@@ -11,10 +12,32 @@ namespace SWE3.ORM
      
         private static Dictionary<Type, __Entity> _Entities = new Dictionary<Type, __Entity>();
 
+        public static string Connectionstring;
 
 
-        public static IDbConnection Connection { get; set; }
+        public static IDbConnection Connection
+        {
+            get
+            {
+                if (Connectionstring == null)
+                {
+                    throw new NullReferenceException("Please Fill Connectionstring");
+                }
+                var tmp = new NpgsqlConnection(Connectionstring);
+                tmp.Open();
+                return tmp;
 
+
+            }
+            private set
+            {
+                return;
+                
+
+            }
+        }
+
+        private static IList<object> localCache = new List<object>();
 
         public static ICache Cache { get; set; }
 
@@ -25,7 +48,7 @@ namespace SWE3.ORM
 
         public static T Get<T>(object pk)
         {
-            return (T) _CreateObject(typeof(T), pk, null);
+            return (T) InitObject(typeof(T), pk);
         }
 
 
@@ -136,80 +159,82 @@ namespace SWE3.ORM
         }
 
 
-       
-        internal static object _CreateObject(Type t, IDataReader re, ICollection<object> localCache)
+
+        public static object InitObject(Type type, object primaryKey)
         {
-            __Entity ent = t._GetEntity();
-            object rval = _SearchCache(t, ent.PrimaryKey.ToFieldType(re.GetValue(re.GetOrdinal(ent.PrimaryKey.ColumnName)), localCache), localCache);
+            object resultValue = Cache.Get(type, primaryKey);
 
-            if(rval == null)
+            if (resultValue != null)
             {
-                if(localCache == null) { localCache = new List<object>(); }
-                localCache.Add(rval = Activator.CreateInstance(t));
+                IDbCommand command = Connection.CreateCommand();
+                __Entity modelEntity = type._GetEntity();
+                command.CommandText = modelEntity.GetSQL() + " WHERE " + modelEntity.PrimaryKey.ColumnName + " = :pk";
+
+                IDataParameter para = command.CreateParameter();
+                para.ParameterName = (":pk");
+                para.Value = primaryKey;
+                command.Parameters.Add(para);
+
+                IDataReader readerData = command.ExecuteReader();
+                Dictionary<string, object> columnValuePairs = DataReaderToDictionary(readerData, modelEntity);
+                readerData.Close();
+                resultValue = InitObject(type, columnValuePairs);
+                command.Dispose();
             }
+            if (resultValue == null) { throw new Exception("No data."); }
+            return resultValue;
+        }
 
-            foreach(__Field i in ent.Internals)
+        private static Dictionary<string, object> DataReaderToDictionary(IDataReader dataReader, __Entity entity)
+        {
+            Dictionary<string, object> columnValuePairs = new();
+            if (dataReader.Read())
             {
-                i.SetValue(rval, i.ToFieldType(re.GetValue(re.GetOrdinal(i.ColumnName)), localCache));
-            }
-
-            foreach(__Field i in ent.Externals)
-            {
-                if(typeof(ILazy).IsAssignableFrom(i.Type))
+                foreach (__Field modelField in entity.Internals)
                 {
-                    i.SetValue(rval, Activator.CreateInstance(i.Type, rval, i.Member.Name));
+                    columnValuePairs.Add(modelField.ColumnName, dataReader.GetValue(dataReader.GetOrdinal(modelField.ColumnName)));
                 }
-                else
+            }
+            return columnValuePairs;
+        }
+        public static object InitObject(Type type, Dictionary<string, object> columnValuePairs)
+        {
+            __Entity modelEntity = type._GetEntity();
+            object resultValue = Cache.Get(type, modelEntity.PrimaryKey.ToFieldType(columnValuePairs[modelEntity.PrimaryKey.ColumnName], localCache));
+            bool foundInChache = true;
+            if (resultValue == null)
+            {
+                foundInChache = false;
+                Cache.Put((resultValue = Activator.CreateInstance(type)));
+            }
+            foreach (__Field inField in modelEntity.Internals)
+            {
+                inField.SetValue(resultValue, inField.ToFieldType(columnValuePairs[inField.ColumnName], localCache));
+            }
+            if (!foundInChache)
+            {
+                foreach (__Field modelField in modelEntity.Externals)
                 {
-                    i.SetValue(rval, i.Fill(Activator.CreateInstance(i.Type), rval, localCache));
+                  //modelField.SetValue(resultValue, _FillList(modelField, Activator.CreateInstance(modelField.Type), resultValue));
                 }
             }
-
-            return rval;
+            return resultValue;
         }
+            
+      
 
-        
-        internal static object _CreateObject(Type t, object pk, ICollection<object> localCache)
+    internal static void _FillList(Type t, object list, List<Dictionary<string,object>> re, ICollection<object> localCache = null)
         {
-            object rval = null;
-            int locc = ((localCache != null) ? localCache.Count : 0);
-
-            IDbCommand cmd = Connection.CreateCommand();
-
-            __Entity ent = t._GetEntity();
-            cmd.CommandText = ent.GetSQL() + (string.IsNullOrWhiteSpace(ent.SubsetQuery) ? " WHERE " : " AND ") + t._GetEntity().PrimaryKey.ColumnName + " = :pk";
-
-            IDataParameter p = cmd.CreateParameter();
-            p.ParameterName = (":pk");
-            p.Value = pk;
-            cmd.Parameters.Add(p);
-
-            IDataReader re = cmd.ExecuteReader();
-            if(re.Read())
+            foreach (var dict in re)
             {
-                rval = _CreateObject(t, re, localCache);
+                list.GetType().GetMethod("Add").Invoke(list, new object[] { InitObject(t, dict) });
             }
 
-            re.Close();
-            cmd.Dispose();
-
-            if(Cache != null) 
-            { 
-                if((localCache != null) && (localCache.Count > locc)) Cache.Put(rval); 
-            }
-
-            return rval;
+     
+               
+            
         }
-
-
-        internal static void _FillList(Type t, object list, IDataReader re, ICollection<object> localCache = null)
-        {
-            while(re.Read())
-            {
-                list.GetType().GetMethod("Add").Invoke(list, new object[] { _CreateObject(t, re, localCache) });
-            }
-        }
-
+     
 
 
         internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters, ICollection<object> localCache = null)
@@ -217,18 +242,31 @@ namespace SWE3.ORM
             IDbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = sql;
 
-            foreach(Tuple<string, object> i in parameters)
+            foreach (Tuple<string, object> i in parameters)
             {
                 IDataParameter p = cmd.CreateParameter();
                 p.ParameterName = i.Item1;
                 p.Value = i.Item2;
                 cmd.Parameters.Add(p);
             }
+            __Entity modelEntity = t._GetEntity();
 
-            IDataReader re = cmd.ExecuteReader();
-            _FillList(t, list, re, localCache);
-            re.Close();
-            re.Dispose();
+            IDataReader readerData = cmd.ExecuteReader();
+
+            List<Dictionary<string, object>> tempList = new();
+            Dictionary<string, object> columnValuePairs = null;
+
+            do
+            {
+                columnValuePairs = DataReaderToDictionary(readerData, modelEntity);
+                if (columnValuePairs.Count > 0)
+                    tempList.Add(columnValuePairs);
+            }
+            while (columnValuePairs != null && columnValuePairs.Count > 0);
+            readerData.Close();
+
+            _FillList(t, list, tempList, localCache);
+            readerData.Dispose();
             cmd.Dispose();
         }
 

@@ -18,7 +18,7 @@ namespace SWE3.ExampleApp.Show
             t.ID = "t.0";
             t.FirstName = "Jerry";
             t.Name = "Mouse";
-            t.Gender = Gender.MALE;
+            t.Gender = 1;
             t.BirthDate = new DateTime(1970, 8, 18);
             t.HireDate = new DateTime(2015, 6, 20);
             t.Salary = 50000;

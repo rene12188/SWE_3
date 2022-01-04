@@ -15,20 +15,20 @@ namespace SWE3.ExampleApp
         /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
-            Orm.Connection = new SQLiteConnection("Data Source=test.sqlite;Version=3;");
-            Orm.Connection.Open();
+            //Orm.Connection = new SQLiteConnection("Data Source=test.sqlite;Version=3;");
+            Orm.Connectionstring = "Server=localhost:5432 ;Database=swe3 ;User Id=postgres;Password=a;";
 
             Orm.Cache = new TrackingCache();
 
             InsertObject.Show(); 
             ModifyObject.Show();
-            WithFK.Show();
+            //WithFK.Show();
             WithFKList.Show();
             WithMToN.Show();
-            WithLazyList.Show();
-            WithCache.Show();
-            WithQuery.Show();
-            WithLocking.Show();
+           // WithLazyList.Show();
+         //   WithCache.Show();
+          //  WithQuery.Show();
+          //  WithLocking.Show();
 
             Orm.Connection.Close();
         }

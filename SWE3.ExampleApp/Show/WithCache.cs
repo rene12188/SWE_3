@@ -28,7 +28,7 @@ namespace SWE3.ExampleApp.Show
             for(int i = 0; i < 7; i++)
             {
                 Teacher t = Orm.Get<Teacher>("t.0");
-                Console.WriteLine("Object [" + t.ID + "] instance no: " + t.InstanceNumber.ToString());
+              
             }
         }
     }

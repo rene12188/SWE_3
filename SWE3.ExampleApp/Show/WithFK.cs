@@ -23,7 +23,7 @@ namespace SWE3.ExampleApp.Show
             Orm.Save(c);
 
             c = Orm.Get<Class>("c.0");
-            Console.WriteLine((c.Teacher.Gender == Gender.MALE ? "Mr. " : "Ms. ") + c.Teacher.Name + " teaches " + c.Name + ".");
+            Console.WriteLine((c.Teacher.Gender == 1 ? "Mr. " : "Ms. ") + c.Teacher.Name + " teaches " + c.Name + ".");
 
             Console.WriteLine("\n");
         }
