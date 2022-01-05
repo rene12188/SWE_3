@@ -132,7 +132,7 @@ namespace SWE3.ORM.MetaModel
         }
 
 
-        public object ToFieldType(object value, ICollection<object> localCache)
+        public object ToFieldType(object value, ICache localCache)
         {
             if(IsForeignKey)
             {
@@ -192,10 +192,10 @@ namespace SWE3.ORM.MetaModel
         }
         
 
-        public object Fill(object list, object obj, ICollection<object> localCache)
+        public object Fill(object list, object obj)
         {
             Orm._FillList(Type.GenericTypeArguments[0], list, _FkSql,
-                          new Tuple<string, object>[] { new Tuple<string, object>(":fk", Entity.PrimaryKey.GetValue(obj)) }, localCache);
+                          new Tuple<string, object>[] { new Tuple<string, object>(":fk", Entity.PrimaryKey.GetValue(obj)) });
 
             return list;
         }

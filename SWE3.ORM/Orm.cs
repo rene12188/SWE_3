@@ -37,8 +37,6 @@ namespace SWE3.ORM
             }
         }
 
-        private static IList<object> localCache = new List<object>();
-
         public static ICache Cache { get; set; }
 
 
@@ -62,7 +60,7 @@ namespace SWE3.ORM
         {
             List<T> rval = new List<T>();
             List<Tuple<string, object>> parameters = new List<Tuple<string, object>>();
-            ICollection<object> localCache = null;
+            
 
             if(names != null)
             {
@@ -74,7 +72,7 @@ namespace SWE3.ORM
                 }
             }
 
-            _FillList(typeof(T), rval, sql, parameters, localCache);
+            _FillList(typeof(T), rval, sql, parameters);
             return rval;
         }
 
@@ -138,22 +136,14 @@ namespace SWE3.ORM
         }
 
         
-        internal static object _SearchCache(Type t, object pk, ICollection<object> localCache)
+        internal static object _SearchCache(Type t, object pk)
         {
             if((Cache != null) && Cache.Contains(t, pk))
             {
                 return Cache.Get(t, pk);
             }
 
-            if(localCache != null)
-            {
-                foreach(object i in localCache)
-                {
-                    if(i.GetType() != t) continue;
-
-                    if(t._GetEntity().PrimaryKey.GetValue(i).Equals(pk)) { return i; }
-                }
-            }
+          
 
             return null;
         }
@@ -197,25 +187,35 @@ namespace SWE3.ORM
             }
             return columnValuePairs;
         }
+
+
         public static object InitObject(Type type, Dictionary<string, object> columnValuePairs)
         {
             __Entity modelEntity = type._GetEntity();
-            object resultValue = Cache.Get(type, modelEntity.PrimaryKey.ToFieldType(columnValuePairs[modelEntity.PrimaryKey.ColumnName], localCache));
+            object resultValue = _SearchCache(type, modelEntity.PrimaryKey.ToFieldType(columnValuePairs[modelEntity.PrimaryKey.ColumnName], Cache));
             bool foundInChache = true;
             if (resultValue == null)
             {
                 foundInChache = false;
-                Cache.Put((resultValue = Activator.CreateInstance(type)));
+                resultValue = Activator.CreateInstance(type);
+             //   Cache.Put((resultValue = Activator.CreateInstance(type)));
             }
+
             foreach (__Field inField in modelEntity.Internals)
             {
-                inField.SetValue(resultValue, inField.ToFieldType(columnValuePairs[inField.ColumnName], localCache));
+                inField.SetValue(resultValue, inField.ToFieldType(columnValuePairs[inField.ColumnName], Cache));
             }
+
+            Cache.Put((resultValue));
+
+
+
             if (!foundInChache)
             {
                 foreach (__Field modelField in modelEntity.Externals)
                 {
-                  //modelField.SetValue(resultValue, _FillList(modelField, Activator.CreateInstance(modelField.Type), resultValue));
+                    // modelField.SetValue(resultValue, _FillList(modelField.GetType(), Activator.CreateInstance(modelField.Type), columnValuePairs));
+                    modelField.SetValue(resultValue, modelField.Fill(Activator.CreateInstance(modelField.Type), resultValue));
                 }
             }
             return resultValue;
@@ -223,21 +223,17 @@ namespace SWE3.ORM
             
       
 
-    internal static void _FillList(Type t, object list, List<Dictionary<string,object>> re, ICollection<object> localCache = null)
+    internal static void _FillList(Type t, object list, List<Dictionary<string,object>> re)
         {
             foreach (var dict in re)
             {
                 list.GetType().GetMethod("Add").Invoke(list, new object[] { InitObject(t, dict) });
             }
-
-     
-               
-            
         }
      
 
 
-        internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters, ICollection<object> localCache = null)
+        internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters)
         {
             IDbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = sql;
@@ -267,7 +263,7 @@ namespace SWE3.ORM
             while (columnValuePairs != null && columnValuePairs.Count > 0);
             readerData.Close();
 
-            _FillList(t, list, tempList, localCache);
+            _FillList(t, list, tempList);
             readerData.Dispose();
             cmd.Dispose();
         }

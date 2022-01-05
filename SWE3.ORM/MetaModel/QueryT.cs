@@ -115,7 +115,7 @@ namespace SWE3.ORM.MetaModel
             }
 
             if(!conj.EndsWith("(")) { sql += ")"; }
-            Orm._FillList(t, _InternalValues, sql, parameters, localCache);
+            Orm._FillList(t, _InternalValues, sql, parameters);
         }
 
 
