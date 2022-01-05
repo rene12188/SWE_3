@@ -14,7 +14,7 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine("-----------------------");
 
             Console.WriteLine("Students with grade > 1:");
-        /*    foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1))
+       /*     foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1))
             {
                 Console.WriteLine(i.FirstName + " " + i.Name);
             }

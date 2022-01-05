@@ -28,7 +28,7 @@ namespace SWE3.ExampleApp
             WithLazyList.Show();
             WithCache.Show();
             //WithQuery.Show();
-            WithLocking.Show();
+            //WithLocking.Show();
 
             Orm.Connection.Close();
         }

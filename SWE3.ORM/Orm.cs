@@ -214,8 +214,8 @@ namespace SWE3.ORM
             {
                 foreach (__Field modelField in modelEntity.Externals)
                 {
-                    // modelField.SetValue(resultValue, _FillList(modelField.GetType(), Activator.CreateInstance(modelField.Type), columnValuePairs));
-                    modelField.SetValue(resultValue, modelField.Fill(Activator.CreateInstance(modelField.Type), resultValue));
+                    //modelField.SetValue(resultValue, _FillList(modelField.GetType(), Activator.CreateInstance(modelField.Type), columnValuePairs));
+                    //modelField.SetValue(resultValue, modelField.Fill(Activator.CreateInstance(modelField.Type), resultValue));
                 }
             }
             return resultValue;
