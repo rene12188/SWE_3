@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SWE3.ORM
+namespace SWE3.ORM.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class EntityAttribute: Attribute
@@ -8,11 +8,9 @@ namespace SWE3.ORM
         public string TableName;
 
 
-        /// <summary>Provides a WHERE-clause that defines a subset of the entity table.</summary>
         public string SubsetQuery;
 
 
-        /// <summary>Foreign key that references master table.</summary>
         public string ChildKey;
     }
 }

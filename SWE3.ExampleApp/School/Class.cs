@@ -1,10 +1,10 @@
 ﻿
 
 using SWE3.ORM;
+using SWE3.ORM.Attributes;
 
 namespace SWE3.ExampleApp.School
 {
-    /// <summary>This class represents a class in the school model.</summary>
     [Entity(TableName = "CLASSES")]
     public class Class
     {

@@ -4,14 +4,9 @@ using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
 {
-    /// <summary>This class implements a database-based locking mechanism.</summary>
     public class DbLocking: ILocking
     {
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // constructors                                                                                                     //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        /// <summary>Creates a new instance of this class.</summary>
+       
         public DbLocking()
         {
             SessionKey = Guid.NewGuid().ToString();
@@ -108,7 +103,6 @@ namespace SWE3.ORM
         }
 
 
-        /// <summary>Gets or sets the locking timeout.</summary>
         public int Timeout
         {
             get; set;

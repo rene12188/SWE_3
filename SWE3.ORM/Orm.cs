@@ -54,7 +54,7 @@ namespace SWE3.ORM
         {
             return new Query<T>(null);
         }
-
+        /*
 
         public static List<T> FromSQL<T>(string sql, IEnumerable<string> names = null, IEnumerable<object> values = null)
         {
@@ -74,7 +74,7 @@ namespace SWE3.ORM
 
             _FillList(typeof(T), rval, sql, parameters);
             return rval;
-        }
+        }*/
 
 
         public static void Lock(object obj)

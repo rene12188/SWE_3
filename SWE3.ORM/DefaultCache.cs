@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace SWE3.ORM
 {
-    /// <summary>This class provides a default cache implementation.</summary>
     public class DefaultCache: ICache
     {
     

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SWE3.ORM.Attributes;
 
 namespace SWE3.ORM.MetaModel
 {

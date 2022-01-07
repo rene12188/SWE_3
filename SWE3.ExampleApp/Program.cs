@@ -27,7 +27,7 @@ namespace SWE3.ExampleApp
             WithMToN.Show();
             WithLazyList.Show();
             WithCache.Show();
-            //WithQuery.Show();
+            WithQuery.Show();
             //WithLocking.Show();
 
             Orm.Connection.Close();

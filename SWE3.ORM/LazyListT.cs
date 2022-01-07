@@ -5,17 +5,14 @@ using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
 {
-    /// <summary>This class implements a lazy loading wrapper for framework object lists.</summary>
-    /// <typeparam name="T">Type.</typeparam>
+
     public class LazyList<T>: IList<T>, ILazy
     {
       
         protected List<T> _InternalItems = null;
 
-        /// <summary>SQL.</summary>
         protected string _Sql;
 
-        /// <summary>SQL parameters.</summary>
         protected ICollection<Tuple<string, object>> _Params;
 
 

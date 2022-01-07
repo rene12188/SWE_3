@@ -4,17 +4,15 @@ using SWE3.ORM;
 
 namespace SWE3.ExampleApp.Show
 {
-    /// <summary>This show case demonstrates a query.</summary>
     public static class WithQuery
     {
-        /// <summary>Implements the show case.</summary>
         public static void Show()
         {
             Console.WriteLine("(7) Query demonstration");
             Console.WriteLine("-----------------------");
 
-            Console.WriteLine("Students with grade > 1:");
-       /*     foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1))
+           Console.WriteLine("Students with grade > 1:");
+            foreach(Student i in Orm.From<Student>())
             {
                 Console.WriteLine(i.FirstName + " " + i.Name);
             }
@@ -23,7 +21,7 @@ namespace SWE3.ExampleApp.Show
             foreach(Student i in Orm.From<Student>().GreaterThan("Grade", 1).Or().Like("FirstName", "al%", true))
             {
                 Console.WriteLine(i.FirstName + " " + i.Name);
-            }*/
+            }
 
             Console.WriteLine("\nShow all persons:");
             foreach(Person i in Orm.From<Person>())
