@@ -7,10 +7,43 @@ using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
 {
-    public class TrackingCache: DefaultCache, ICache
+    public class Cache:  ICache
     {
        
         protected Dictionary<Type, Dictionary<object, string>> _Hashes = new Dictionary<Type, Dictionary<object, string>>();
+
+        protected Dictionary<Type, Dictionary<object, object>> _Caches = new Dictionary<Type, Dictionary<object, object>>();
+
+        protected virtual Dictionary<object, object> _GetCache(Type t)
+        {
+            if (_Caches.ContainsKey(t)) { return _Caches[t]; }
+
+            Dictionary<object, object> rval = new Dictionary<object, object>();
+            _Caches.Add(t, rval);
+
+            return rval;
+        }
+
+
+        public virtual object Get(Type t, object pk)
+        {
+            Dictionary<object, object> c = _GetCache(t);
+
+            if (c.ContainsKey(pk)) { return c[pk]; }
+            return null;
+        }
+
+
+
+        public virtual bool Contains(Type t, object pk)
+        {
+            return _GetCache(t).ContainsKey(pk);
+        }
+
+        public virtual bool Contains(object obj)
+        {
+            return _GetCache(obj.GetType()).ContainsKey(obj._GetEntity().PrimaryKey.GetValue(obj));
+        }
 
 
 
@@ -59,20 +92,21 @@ namespace SWE3.ORM
         }
 
 
-        public override void Put(object obj)
+        public  void Put(object obj)
         {
-            base.Put(obj);
-            if(obj != null) { _GetHash(obj.GetType())[obj._GetEntity().PrimaryKey.GetValue(obj)] = _ComputeHash(obj); }
+            if (obj != null) { _GetCache(obj.GetType())[obj._GetEntity().PrimaryKey.GetValue(obj)] = obj; }
+            if (obj != null) { _GetHash(obj.GetType())[obj._GetEntity().PrimaryKey.GetValue(obj)] = _ComputeHash(obj); }
         }
 
 
-        public override void Remove(object obj)
+        public  void Remove(object obj)
         {
-            base.Remove(obj);
+
+            _GetCache(obj.GetType()).Remove(obj._GetEntity().PrimaryKey.GetValue(obj));
             _GetHash(obj.GetType()).Remove(obj._GetEntity().PrimaryKey.GetValue(obj));
         }
 
-        public override bool HasChanged(object obj)
+        public bool HasChanged(object obj)
         {
             Dictionary<object, string> h = _GetHash(obj.GetType());
             object pk = obj._GetEntity().PrimaryKey.GetValue(obj);

@@ -16,9 +16,13 @@ namespace SWE3.ExampleApp
         static void Main(string[] args)
         {
             //Orm.Connection = new SQLiteConnection("Data Source=test.sqlite;Version=3;");
-            Orm.Connectionstring = "Server=localhost:5432 ;Database=swe3 ;User Id=postgres;Password=a;";
+         //   Orm.Connectionstring = "Server=localhost:5432 ;Database=swe3 ;User Id=postgres;Password=a;";
 
-            Orm.Cache = new TrackingCache();
+
+
+            Orm.Connectionstring = "Data Source=test.sqlite;Version=3";
+            Orm.Target = Orm.DBTYPE.SQLite;
+            Orm.Cache = new Cache();
 
             InsertObject.Show(); 
             ModifyObject.Show();
@@ -27,7 +31,7 @@ namespace SWE3.ExampleApp
             WithMToN.Show();
             WithLazyList.Show();
             WithCache.Show();
-            WithQuery.Show();
+            //WithQuery.Show();
             //WithLocking.Show();
 
             Orm.Connection.Close();

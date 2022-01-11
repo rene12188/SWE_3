@@ -17,7 +17,7 @@ namespace SWE3.ExampleApp.Show
             _ShowInstances();
 
             Console.WriteLine("\nWith cache:");
-            Orm.Cache = new TrackingCache();
+            Orm.Cache = new Cache();
             _ShowInstances();
         }
 

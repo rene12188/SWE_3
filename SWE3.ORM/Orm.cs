@@ -1,20 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using Npgsql;
 using SWE3.ORM.MetaModel;
 
 namespace SWE3.ORM
 {
-    /// <summary>This class allows access to OR framework functionalities.</summary>
     public static class Orm
     {
+        public  enum DBTYPE
+        {
+            Postgres = 0,
+            SQLite = 1
+        }
+
+        public static DBTYPE Target = DBTYPE.Postgres;
      
         private static Dictionary<Type, __Entity> _Entities = new Dictionary<Type, __Entity>();
-
+        
         public static string Connectionstring;
 
 
+        //Generates a DB Connection with the Connectionstring
         public static IDbConnection Connection
         {
             get
@@ -23,9 +32,20 @@ namespace SWE3.ORM
                 {
                     throw new NullReferenceException("Please Fill Connectionstring");
                 }
-                var tmp = new NpgsqlConnection(Connectionstring);
-                tmp.Open();
-                return tmp;
+
+                if (Target == DBTYPE.Postgres)
+                {
+                    var tmp = new NpgsqlConnection(Connectionstring);
+                    tmp.Open();
+                    return tmp;
+                }
+                else
+                {
+                    var tmp = new SQLiteConnection(Connectionstring);
+                    tmp.Open();
+                    return tmp;
+                }
+               
 
 
             }
@@ -43,7 +63,7 @@ namespace SWE3.ORM
         public static ILocking Locking { get; set; }
 
 
-
+        //Get an Object with a certain PK
         public static T Get<T>(object pk)
         {
             return (T) InitObject(typeof(T), pk);
@@ -54,40 +74,19 @@ namespace SWE3.ORM
         {
             return new Query<T>(null);
         }
-        /*
 
-        public static List<T> FromSQL<T>(string sql, IEnumerable<string> names = null, IEnumerable<object> values = null)
-        {
-            List<T> rval = new List<T>();
-            List<Tuple<string, object>> parameters = new List<Tuple<string, object>>();
-            
-
-            if(names != null)
-            {
-                List<string> lnames = new List<string>(names);
-                List<object> lvals  = new List<object>(values);
-                for(int i = 0; i < lnames.Count; i++)
-                {
-                    parameters.Add(new Tuple<string, object>(lnames[i], lvals[i]));
-                }
-            }
-
-            _FillList(typeof(T), rval, sql, parameters);
-            return rval;
-        }*/
-
-
+        //Locks 
         public static void Lock(object obj)
         {
             if(Locking != null) { Locking.Lock(obj); }
         }
-
-
+         //Releases the Lock
         public static void Release(object obj)
         {
             if(Locking != null) { Locking.Release(obj); }
         }
 
+        //Saves an Object
         public static void Save(object obj)
         {
             __Entity ent = obj._GetEntity();
@@ -97,7 +96,7 @@ namespace SWE3.ORM
             _Save(obj, ent, bse.IsMaterial, false);
         }
 
-
+        //Deletes an Object from the Database
         public static void Delete(object obj)
         {
             __Entity ent = obj._GetEntity();
@@ -123,7 +122,7 @@ namespace SWE3.ORM
             return _Entities[t];
         }
 
-        
+        //Get all Child Types of an Object
         internal static Type[] _GetChildTypes(this Type t)
         {
             List<Type> rval = new List<Type>();
@@ -135,7 +134,7 @@ namespace SWE3.ORM
             return rval.ToArray();
         }
 
-        
+        //Search Cache for a certain PK
         internal static object _SearchCache(Type t, object pk)
         {
             if((Cache != null) && Cache.Contains(t, pk))
@@ -149,7 +148,7 @@ namespace SWE3.ORM
         }
 
 
-
+        //Initilizes Object when loaded from the DB
         public static object InitObject(Type type, object primaryKey)
         {
             object resultValue = Cache.Get(type, primaryKey);
@@ -172,9 +171,12 @@ namespace SWE3.ORM
                 command.Dispose();
             }
             if (resultValue == null) { throw new Exception("No data."); }
+          
             return resultValue;
         }
 
+
+        //Utility Function to Convert a Data Reader to a Dictionary 
         private static Dictionary<string, object> DataReaderToDictionary(IDataReader dataReader, __Entity entity)
         {
             Dictionary<string, object> columnValuePairs = new();
@@ -198,7 +200,7 @@ namespace SWE3.ORM
             {
                 foundInChache = false;
                 resultValue = Activator.CreateInstance(type);
-             //   Cache.Put((resultValue = Activator.CreateInstance(type)));
+                
             }
 
             foreach (__Field inField in modelEntity.Internals)
