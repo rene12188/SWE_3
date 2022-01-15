@@ -28,11 +28,11 @@ namespace SWE3.ExampleApp
             WithFKList.Show();
             WithMToN.Show();
             WithLazyList.Show();
+         
             WithCache.Show();
 
             WithLocking.Show();
-
-            Orm.Connection.Close();
+            WithQuery.Show();
         }
     }
 }

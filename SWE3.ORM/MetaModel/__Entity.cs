@@ -141,6 +141,22 @@ namespace SWE3.ORM.MetaModel
             }
         }
 
+        public string GetSql(string prefix = "")
+        {
+            string readValue = "SELECT ";
+
+            for (int i = 0; i < Internals.Length; i++)
+            {
+                if (i > 0)
+                {
+                    readValue += ", ";
+                }
+                readValue += prefix.Trim() + Internals[i].ColumnName;
+            }
+            readValue += $" FROM {TableName}";
+
+            return readValue;
+        }
 
         public __Field PrimaryKey
         {

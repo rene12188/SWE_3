@@ -212,14 +212,6 @@ namespace SWE3.ORM
 
 
 
-            if (!foundInChache)
-            {
-                foreach (__Field modelField in modelEntity.Externals)
-                {
-                    //modelField.SetValue(resultValue, _FillList(modelField.GetType(), Activator.CreateInstance(modelField.Type), columnValuePairs));
-                    //modelField.SetValue(resultValue, modelField.Fill(Activator.CreateInstance(modelField.Type), resultValue));
-                }
-            }
             return resultValue;
         }
             
@@ -232,11 +224,11 @@ namespace SWE3.ORM
                 list.GetType().GetMethod("Add").Invoke(list, new object[] { InitObject(t, dict) });
             }
         }
-     
 
 
-        internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters)
-        {
+
+    internal static void _FillList(Type t, object list, string sql, IEnumerable<Tuple<string, object>> parameters)
+    {
             IDbCommand cmd = Connection.CreateCommand();
             cmd.CommandText = sql;
 
@@ -286,7 +278,7 @@ namespace SWE3.ORM
         }
 
 
-        private static void _Save(object obj, __Entity ent, bool hasMaterialBase, bool isBase)
+        private static void _Save(object obj, __Entity ent, bool materialBased, bool isBase)
         {
             if(Cache != null) { if(!Cache.HasChanged(obj)) return; }
 
@@ -294,7 +286,7 @@ namespace SWE3.ORM
             string update = "";
             string insert = "";
             cmd.CommandText = ("INSERT INTO " + ent.TableName + " (");
-            if(hasMaterialBase)
+            if(materialBased)
             {
                 cmd.CommandText += ent.ChildKey + ", ";
                 update = "ON CONFLICT (" + ent.ChildKey + ") DO UPDATE SET ";
@@ -354,5 +346,7 @@ namespace SWE3.ORM
 
             if(Cache != null) { Cache.Put(obj); }
         }
+
+        
     }
 }

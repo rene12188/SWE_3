@@ -5,228 +5,222 @@ using System.Collections.Generic;
 namespace SWE3.ORM.MetaModel
 {
 
-    public sealed class Query<T>: IEnumerable<T>
+     public sealed class Query<T>: IEnumerable<T>
     {
-        
-        private Query<T> _Previous;
-
-        private __QueryOperation _Op = __QueryOperation.NOP;
-
-        private object[] _Args = null;
-
-        private List<T> _InternalValues = null;
-
-
+        private Query<T> _previous;
+        private QueryOperationEnum _operation = QueryOperationEnum.Nop;
+        private object[] _arguments = null;
+        private List<T> _inteneralValueList = null;
 
         internal Query(Query<T> previous)
         {
-            _Previous = previous;
+            _previous = previous;
         }
 
-
-        private void _Fill(Type t, ICollection<object> localCache)
+        private void Fill(Type type, ICollection<object> localCacheCollection)
         {
-            List<Query<T>> ops = new List<Query<T>>();
+            List<Query<T>> operationList = new List<Query<T>>();
 
-            Query<T> q = this;
-            while(q != null)
+            Query<T> query = this;
+            while(query != null)
             {
-                ops.Insert(0, q);
-                q = q._Previous;
+                operationList.Insert(0, query);
+                query = query._previous;
             }
 
-            __Entity ent = t._GetEntity();
-
-            string sql = ent.GetSQL();
-            List<Tuple<string, object>> parameters = new List<Tuple<string, object>>();
-            string conj = (string.IsNullOrWhiteSpace(ent.SubsetQuery) ? " WHERE (" : " AND (");
+            __Entity entity = type._GetEntity();
+            string sql = entity.GetSql();
+            List<Tuple<string, object>> parameterList = new List<Tuple<string, object>>();
+            string conjunction = " WHERE ";
             bool not = false;
-            string opbrk = "";
-            string clbrk = "";
-            int n = 0;
+            string openbracket = "";
+            string closebracket = "";
+            int k = 0;
             string op;
-
             __Field field;
-            foreach(Query<T> i in ops)
+
+            foreach(var operation in operationList)
             {
-                switch(i._Op)
+                switch(operation._operation)
                 {
-                    case __QueryOperation.OR:
-                        if(!conj.EndsWith("(")) { conj = " OR "; }
-                        break;
-                    case __QueryOperation.NOT:
-                        not = true; break;
-                    case __QueryOperation.GRP:
-                        opbrk += "("; break;
-                    case __QueryOperation.ENDGRP:
-                        clbrk += ")"; break;
-                    case __QueryOperation.EQUALS:
-                    case __QueryOperation.LIKE:
-                        field = ent.GetFieldByName((string) i._Args[0]);
-
-                        if(i._Op == __QueryOperation.LIKE)
+                    case QueryOperationEnum.Or:
+                        if (conjunction != " WHERE ")
                         {
-                            op = (not ? " NOT LIKE " : " LIKE ");
+                            conjunction = " OR ";
                         }
-                        else { op = (not ? " != " : " = "); }
-
-                        sql += clbrk + conj + opbrk;
-                        sql += (((bool) i._Args[2] ? "Lower(" + field.ColumnName + ")" : field.ColumnName) + op +
-                                ((bool) i._Args[2] ? "Lower(:p" + n.ToString() + ")" : ":p" + n.ToString()));
-
-                        if((bool) i._Args[2]) { i._Args[1] = ((string) i._Args[1]).ToLower(); }
-                        parameters.Add(new Tuple<string, object>(":p" + n++.ToString(), field.ToColumnType(i._Args[1])));
-
-                        opbrk = clbrk = ""; conj = " AND "; not = false;
                         break;
-                    case __QueryOperation.IN:
-                        field = ent.GetFieldByName((string) i._Args[0]);
 
-                        sql += clbrk + conj + opbrk;
-                        sql += field.ColumnName + (not ? " NOT IN (" : " IN (");
-                        for(int k = 1; k < i._Args.Length; k++)
+                    case QueryOperationEnum.Not:
+                        not = true; break;
+
+                    case QueryOperationEnum.Grp:
+                        openbracket += "("; break;
+
+                    case QueryOperationEnum.Endgrp:
+                        closebracket += ")"; break;
+
+                    case QueryOperationEnum.Equals:
+                    case QueryOperationEnum.Like:
+                        field = entity.GetFieldByName((string) operation._arguments[0]);
+
+                        if(operation._operation == QueryOperationEnum.Like)
                         {
-                            if(k > 1) { sql += ", "; }
-                            sql += (":p" + n.ToString());
-                            parameters.Add(new Tuple<string, object>(":p" + n++.ToString(), field.ToColumnType(i._Args[k])));
+                            op = not ? " NOT LIKE " : " LIKE ";
+                        }
+                        else
+                        {
+                            op = not ? " != " : " = ";
+                        }
+
+                        sql += closebracket + conjunction + openbracket;
+                        sql += ((bool) operation._arguments[2] ? "Lower(" + field.ColumnName + ")" : field.ColumnName) + op +
+                                ((bool) operation._arguments[2] ? "Lower(:p" + k.ToString() + ")" : ":p" + k.ToString());
+
+                        if ((bool)operation._arguments[2])
+                        {
+                            operation._arguments[1] = ((string) operation._arguments[1]).ToLower();
+                        }
+                        parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._arguments[1])));
+
+                        openbracket = closebracket = ""; conjunction = " AND "; not = false;
+                        break;
+
+                    case QueryOperationEnum.In:
+                        field = entity.GetFieldByName((string) operation._arguments[0]);
+
+                        sql += closebracket + conjunction + openbracket;
+                        sql += field.ColumnName + (not ? " NOT IN (" : " IN (");
+                        for(int l = 1; l < operation._arguments.Length; l++)
+                        {
+                            if (l > 1)
+                            {
+                                sql += ", ";
+                            }
+                            sql += ":p" + k.ToString();
+                            parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._arguments[l])));
                         }
                         sql += ")";
 
-                        opbrk = clbrk = ""; conj = " AND "; not = false;
+                        openbracket = closebracket = ""; conjunction = " AND "; not = false;
                         break;
-                    case __QueryOperation.GT:
-                    case __QueryOperation.LT:
-                        field = ent.GetFieldByName((string) i._Args[0]);
 
-                        if(i._Op == __QueryOperation.GT)
+                    case QueryOperationEnum.Gt:
+                    case QueryOperationEnum.Lt:
+                        field = entity.GetFieldByName((string) operation._arguments[0]);
+
+                        if(operation._operation == QueryOperationEnum.Gt)
                         {
-                            op = (not ? " <= " : " > ");
+                            op = not ? " <= " : " > ";
                         }
-                        else { op = (not ? " >= " : " < "); }
+                        else
+                        {
+                            op = not ? " >= " : " < ";
+                        }
 
-                        sql += clbrk + conj + opbrk;
-                        sql += (field.ColumnName + op + ":p" + n.ToString());
+                        sql += closebracket + conjunction + openbracket;
+                        sql += (field.ColumnName + op + ":p" + k.ToString());
 
-                        parameters.Add(new Tuple<string, object>(":p" + n++.ToString(), field.ToColumnType(i._Args[1])));
+                        parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._arguments[1])));
 
-                        opbrk = clbrk = ""; conj = " AND "; not = false;
+                        openbracket = closebracket = ""; conjunction = " AND "; not = false;
                         break;
                 }
             }
 
-            if(!conj.EndsWith("(")) { sql += ")"; }
-            Orm._FillList(t, _InternalValues, sql, parameters);
+            Orm._FillList(type, _inteneralValueList, sql, parameterList);
         }
 
-
-        /// <summary>Gets the query values.</summary>
-        private List<T> _Values
+        private List<T> _values
         {
             get
             {
-                if(_InternalValues == null)
+                if(_inteneralValueList == null)
                 {
-                    _InternalValues = new List<T>();
+                    _inteneralValueList = new List<T>();
                     
-                    if(typeof(T).IsAbstract || typeof(T)._GetEntity().IsMaterial)
-                    {
-                        ICollection<object> localCache = null;
-                        foreach(Type i in typeof(T)._GetChildTypes())
-                        {
-                            _Fill(i, localCache);
-                        }
-                    }
-                    else { _Fill(typeof(T), null); }
+                  
+                     Fill(typeof(T), null); 
                 }
 
-                return _InternalValues;
+                return _inteneralValueList;
             }
         }
 
-
-
-        private Query<T> _SetOp(__QueryOperation op, params object[] args)
+        private Query<T> _SetOp(QueryOperationEnum operation, params object[] arguments)
         {
-            _Op = op;
-            _Args = args;
+            _operation = operation;
+            _arguments = arguments;
 
             return new Query<T>(this);
         }
 
         public Query<T> Not()
         {
-            return _SetOp(__QueryOperation.NOT);
+            return _SetOp(QueryOperationEnum.Not);
         }
 
-        
         public Query<T> And()
         {
-            return _SetOp(__QueryOperation.AND);
+            return _SetOp(QueryOperationEnum.And);
         }
-        
+
         public Query<T> Or()
         {
-            return _SetOp(__QueryOperation.OR);
+            return _SetOp(QueryOperationEnum.Or);
         }
 
         public Query<T> BeginGroup()
         {
-            return _SetOp(__QueryOperation.GRP);
+            return _SetOp(QueryOperationEnum.Grp);
         }
-
 
         public Query<T> EndGroup()
         {
-            return _SetOp(__QueryOperation.ENDGRP);
+            return _SetOp(QueryOperationEnum.Endgrp);
         }
 
-        
         public Query<T> Equals(string field, object value, bool ignoreCase = false)
         {
-            return _SetOp(__QueryOperation.EQUALS, field, value, ignoreCase);
+            return _SetOp(QueryOperationEnum.Equals, field, value, ignoreCase);
         }
-
 
         public Query<T> Like(string field, object value, bool ignoreCase = false)
         {
-            return _SetOp(__QueryOperation.LIKE, field, value, ignoreCase);
+            return _SetOp(QueryOperationEnum.Like, field, value, ignoreCase);
         }
-
 
         public Query<T> In(string field, params object[] values)
         {
             List<object> v = new List<object>(values);
             v.Insert(0, field);
-            return _SetOp(__QueryOperation.LIKE, v.ToArray());
+            return _SetOp(QueryOperationEnum.Like, v.ToArray());
         }
-
 
         public Query<T> GreaterThan(string field, object value)
         {
-            return _SetOp(__QueryOperation.GT, field, value);
+            return _SetOp(QueryOperationEnum.Gt, field, value);
         }
 
         public Query<T> LessThan(string field, object value)
         {
-            return _SetOp(__QueryOperation.LT, field, value);
-        }
-        
-        public List<T> ToList()
-        {
-            return new List<T>(_Values);
+            return _SetOp(QueryOperationEnum.Lt, field, value);
         }
 
+        public List<T> ToList()
+        {
+            return new List<T>(_values);
+        }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return _Values.GetEnumerator();
+            return _values.GetEnumerator();
         }
 
-
-        
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _Values.GetEnumerator();
+            return _values.GetEnumerator();
         }
     }
 }
+
+

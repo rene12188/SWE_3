@@ -3,6 +3,10 @@
     
     public class LazyObject<T>: ILazy
     {
+        public LazyObject()
+        {
+            
+        }
       
         protected object _Pk;
 
