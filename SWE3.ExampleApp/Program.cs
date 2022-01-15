@@ -30,9 +30,9 @@ namespace SWE3.ExampleApp
             WithLazyList.Show();
          
             WithCache.Show();
-
-            WithLocking.Show();
             WithQuery.Show();
+            WithLocking.Show();
+       
         }
     }
 }

@@ -23,11 +23,11 @@ namespace SWE3.ExampleApp.Show
                 Console.WriteLine(i.FirstName + " " + i.Name);
             }
 
-            Console.WriteLine("\nShow all persons:");
+         /*   Console.WriteLine("\nShow all persons:");
             foreach(Person i in Orm.From<Person>())
             {
                 Console.WriteLine(i.FirstName + " " + i.Name + " (" + i.GetType().Name + ")");
-            }
+            }*/
         }
     }
 }
