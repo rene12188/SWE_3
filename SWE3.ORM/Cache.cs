@@ -68,7 +68,7 @@ namespace SWE3.ORM
                 {
                     if(i.IsForeignKey)
                     {
-                        if(m != null) { rval += m._GetEntity().PrimaryKey.GetValue(m).ToString(); }
+                        if(m != null) { rval += m._GetEntity().PrimaryKey.GetValue(m); }
                     }
                     else { rval += (i.ColumnName + "=" + m.ToString() + ";"); }
                 }

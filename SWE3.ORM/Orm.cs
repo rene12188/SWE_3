@@ -193,12 +193,14 @@ namespace SWE3.ORM
 
         public static object InitObject(Type type, Dictionary<string, object> columnValuePairs)
         {
+            if(columnValuePairs.Count <1)
+                return Activator.CreateInstance(type);
             __Entity modelEntity = type._GetEntity();
             object resultValue = _SearchCache(type, modelEntity.PrimaryKey.ToFieldType(columnValuePairs[modelEntity.PrimaryKey.ColumnName], Cache));
-            bool foundInChache = true;
+
             if (resultValue == null)
             {
-                foundInChache = false;
+              
                 resultValue = Activator.CreateInstance(type);
                 
             }
