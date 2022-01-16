@@ -11,20 +11,20 @@ Zwischen dem Namespace und der Klassendefinition kann folgendes geschrieben werd
 Dieses Beispiel stellt den tabellen namen manuell ein, welcher in der Datenbank verwendet wird. Stellt man das nicht ein, wird als Tabellenname in der Datenbank nur der Klassenname verwendet. 
 
 ### PrimaryKeys
-Will man ein Klassenattribut als PrimaryKey definieren so schreibt man folgende Zeile vor das Attribut: <br>
+Property als PrimaryKey definieren dann verwendet man das Attribut: <br>
 <b>[PrimaryKey]</b>
 
 ### ForeignKey
-Will man ein ein Klassenattribut als ForeignKey definieren so schreibt man folgende Zeile vor das Attribut: <br>
+Wenn eine Property/Field als ForeignKey definiert werden solk tagged man es mit dem Attribut: <br>
 <b>[ForeignKey(ColumnName = "Kxyz")]</b> <br>
 Zu beachten ist, dass ColumnName den Namen der Spalte definiert.
 
 ### Ignore 
-Will man ein Attribut nicht in der Datenbank haben, dann schreibt man vor das Klassenattribut folgende Zeile: <br>
+Will man ein Attribiut ignoriert haben muss man folgendes Attrobit verwenden <br>
 <b>[Ignore]</b>
 
 ### Field
-Will man den Namen von einem Klassenattribut in der Spalte einer Datenbanktabelle anderst benennen, dann schreibt man vor das Klassenattribut folgende Zeile: <br>
+Es ist möglich den Namen einer Property in der Datenbank zu ändern mit dem folgenden Attribut: <br>
 <b>[Field(ColumnName = "xyz")]</b> 
 
 ## Im Programm 
