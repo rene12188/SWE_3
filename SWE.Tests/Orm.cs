@@ -24,7 +24,7 @@ namespace SWE.Tests
 
            
 
-            Assert.Throws<KeyNotFoundException>(() =>Orm.Get<Teacher>("t.0"));
+            Assert.Throws<KeyNotFoundException>(() =>Orm.GetObject<Teacher>("t.0"));
 
             
 
@@ -43,9 +43,9 @@ namespace SWE.Tests
             t.HireDate = new DateTime(2015, 6, 20);
             t.Salary = 50000;
 
-            Orm.Save(t);
+            Orm.SaveObject(t);
 
-            Assert.IsInstanceOf<Teacher>(Orm.Get<Teacher>("t.0"));
+            Assert.IsInstanceOf<Teacher>(Orm.GetObject<Teacher>("t.0"));
 
 
 
@@ -64,11 +64,11 @@ namespace SWE.Tests
             t.HireDate = new DateTime(2015, 6, 20);
             t.Salary = 50000;
 
-            Orm.Delete(t);
+            Orm.DeleteObject(t);
 
 
 
-            Assert.Throws<KeyNotFoundException>(() => Orm.Get<Teacher>("t.0"));
+            Assert.Throws<KeyNotFoundException>(() => Orm.GetObject<Teacher>("t.0"));
 
 
 

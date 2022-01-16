@@ -24,7 +24,7 @@
         {
             get
             {
-                if(!_Initialized) { _Value = Orm.Get<T>(_Pk); _Initialized = true; }
+                if(!_Initialized) { _Value = Orm.GetObject<T>(_Pk); _Initialized = true; }
                 return _Value;
             }
             set

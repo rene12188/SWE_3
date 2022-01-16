@@ -13,7 +13,7 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine("(2) Load and modify object");
             Console.WriteLine("--------------------------");
 
-            Teacher t = Orm.Get<Teacher>("t.0");
+            Teacher t = Orm.GetObject<Teacher>("t.0");
 
             Console.WriteLine();
             Console.WriteLine("Salary for " + t.FirstName + " " + t.Name + " is " + t.Salary.ToString() + " Pesos.");
@@ -23,7 +23,7 @@ namespace SWE3.ExampleApp.Show
 
             Console.WriteLine("Salary for " + t.FirstName + " " + t.Name + " is now " + t.Salary.ToString() + " Pesos.");
 
-            Orm.Save(t);
+            Orm.SaveObject(t);
 
             Console.WriteLine("\n");
         }

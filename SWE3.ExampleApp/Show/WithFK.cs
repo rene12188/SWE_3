@@ -13,7 +13,7 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine("(3) Create and load an object with foreign key");
             Console.WriteLine("----------------------------------------------");
 
-            Teacher t = Orm.Get<Teacher>("t.0");
+            Teacher t = Orm.GetObject<Teacher>("t.0");
 
             Class c = new Class();
             c.ID = "c.0";
@@ -21,9 +21,9 @@ namespace SWE3.ExampleApp.Show
             c.Teacher = t;
 
 
-            Orm.Save(c);
+            Orm.SaveObject(c);
 
-            t = Orm.Get<Teacher>("t.0");
+            t = Orm.GetObject<Teacher>("t.0");
             Console.WriteLine((c.Teacher.Gender == 1 ? "Mr. " : "Ms. ") + c.Teacher.Name + " teaches " + c.Name + ".");
 
             Console.WriteLine("\n");

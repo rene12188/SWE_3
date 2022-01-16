@@ -27,7 +27,7 @@ namespace SWE3.ExampleApp.Show
         {
             for(int i = 0; i < 7; i++)
             {
-                Teacher t = Orm.Get<Teacher>("t.0");
+                Teacher t = Orm.GetObject<Teacher>("t.0");
               
             }
         }

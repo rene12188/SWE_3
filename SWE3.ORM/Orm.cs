@@ -63,8 +63,8 @@ namespace SWE3.ORM
         public static ILocking Locking { get; set; }
 
 
-        //Get an Object with a certain PK
-        public static T Get<T>(object pk)
+        //GetObject an Object with a certain PK
+        public static T GetObject<T>(object pk)
         {
             return (T) InitObject(typeof(T), pk);
         }
@@ -87,7 +87,7 @@ namespace SWE3.ORM
         }
 
         //Saves an Object
-        public static void Save(object obj)
+        public static void SaveObject(object obj)
         {
             __Entity ent = obj._GetEntity();
             __Entity bse = obj.GetType().BaseType._GetEntity();
@@ -97,7 +97,7 @@ namespace SWE3.ORM
         }
 
         //Deletes an Object from the Database
-        public static void Delete(object obj)
+        public static void DeleteObject(object obj)
         {
             __Entity ent = obj._GetEntity();
             __Entity bse = obj.GetType().BaseType._GetEntity();
@@ -122,7 +122,7 @@ namespace SWE3.ORM
             return _Entities[t];
         }
 
-        //Get all Child Types of an Object
+        //GetObject all Child Types of an Object
         internal static Type[] _GetChildTypes(this Type t)
         {
             List<Type> rval = new List<Type>();

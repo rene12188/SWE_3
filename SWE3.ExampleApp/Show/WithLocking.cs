@@ -15,7 +15,7 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine();
 
             Orm.Locking = new DbLocking();
-            Teacher t = Orm.Get<Teacher>("t.0");
+            Teacher t = Orm.GetObject<Teacher>("t.0");
             Orm.Lock(t);
 
             Orm.Locking = new DbLocking();

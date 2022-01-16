@@ -7,17 +7,17 @@ namespace SWE3.ORM.MetaModel
 
      public sealed class Query<T>: IEnumerable<T>
     {
-        private Query<T> _previous;
+        private Query<T> _prev;
         private QueryOperationEnum _operation = QueryOperationEnum.Nop;
-        private object[] _arguments = null;
-        private List<T> _inteneralValueList = null;
+        private object[] _args = null;
+        private List<T> _valueList = null;
 
-        internal Query(Query<T> previous)
+        internal Query(Query<T> prev)
         {
-            _previous = previous;
+            _prev = prev;
         }
 
-        private void Fill(Type type, ICollection<object> localCacheCollection)
+        private void Fill(Type type)
         {
             List<Query<T>> operationList = new List<Query<T>>();
 
@@ -25,7 +25,7 @@ namespace SWE3.ORM.MetaModel
             while(query != null)
             {
                 operationList.Insert(0, query);
-                query = query._previous;
+                query = query._prev;
             }
 
             __Entity entity = type._GetEntity();
@@ -61,7 +61,7 @@ namespace SWE3.ORM.MetaModel
 
                     case QueryOperationEnum.Equals:
                     case QueryOperationEnum.Like:
-                        field = entity.GetFieldByName((string) operation._arguments[0]);
+                        field = entity.GetFieldByName((string) operation._args[0]);
 
                         if(operation._operation == QueryOperationEnum.Like)
                         {
@@ -73,31 +73,31 @@ namespace SWE3.ORM.MetaModel
                         }
 
                         sql += closebracket + conjunction + openbracket;
-                        sql += ((bool) operation._arguments[2] ? "Lower(" + field.ColumnName + ")" : field.ColumnName) + op +
-                                ((bool) operation._arguments[2] ? "Lower(:p" + k.ToString() + ")" : ":p" + k.ToString());
+                        sql += ((bool) operation._args[2] ? "Lower(" + field.ColumnName + ")" : field.ColumnName) + op +
+                                ((bool) operation._args[2] ? "Lower(:p" + k.ToString() + ")" : ":p" + k.ToString());
 
-                        if ((bool)operation._arguments[2])
+                        if ((bool)operation._args[2])
                         {
-                            operation._arguments[1] = ((string) operation._arguments[1]).ToLower();
+                            operation._args[1] = ((string) operation._args[1]).ToLower();
                         }
-                        parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._arguments[1])));
+                        parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._args[1])));
 
                         openbracket = closebracket = ""; conjunction = " AND "; not = false;
                         break;
 
                     case QueryOperationEnum.In:
-                        field = entity.GetFieldByName((string) operation._arguments[0]);
+                        field = entity.GetFieldByName((string) operation._args[0]);
 
                         sql += closebracket + conjunction + openbracket;
                         sql += field.ColumnName + (not ? " NOT IN (" : " IN (");
-                        for(int l = 1; l < operation._arguments.Length; l++)
+                        for(int l = 1; l < operation._args.Length; l++)
                         {
                             if (l > 1)
                             {
                                 sql += ", ";
                             }
                             sql += ":p" + k.ToString();
-                            parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._arguments[l])));
+                            parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._args[l])));
                         }
                         sql += ")";
 
@@ -106,7 +106,7 @@ namespace SWE3.ORM.MetaModel
 
                     case QueryOperationEnum.Gt:
                     case QueryOperationEnum.Lt:
-                        field = entity.GetFieldByName((string) operation._arguments[0]);
+                        field = entity.GetFieldByName((string) operation._args[0]);
 
                         if(operation._operation == QueryOperationEnum.Gt)
                         {
@@ -120,36 +120,36 @@ namespace SWE3.ORM.MetaModel
                         sql += closebracket + conjunction + openbracket;
                         sql += (field.ColumnName + op + ":p" + k.ToString());
 
-                        parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._arguments[1])));
+                        parameterList.Add(new Tuple<string, object>(":p" + k++.ToString(), field.ToColumnType(operation._args[1])));
 
                         openbracket = closebracket = ""; conjunction = " AND "; not = false;
                         break;
                 }
             }
 
-            Orm._FillList(type, _inteneralValueList, sql, parameterList);
+            Orm._FillList(type, _valueList, sql, parameterList);
         }
 
         private List<T> _values
         {
             get
             {
-                if(_inteneralValueList == null)
+                if(_valueList == null)
                 {
-                    _inteneralValueList = new List<T>();
+                    _valueList = new List<T>();
                     
                   
-                     Fill(typeof(T), null); 
+                     Fill(typeof(T)); 
                 }
 
-                return _inteneralValueList;
+                return _valueList;
             }
         }
 
         private Query<T> _SetOp(QueryOperationEnum operation, params object[] arguments)
         {
             _operation = operation;
-            _arguments = arguments;
+            _args = arguments;
 
             return new Query<T>(this);
         }

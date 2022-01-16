@@ -23,7 +23,7 @@ namespace SWE3.ExampleApp.Show
             t.HireDate = new DateTime(2015, 6, 20);
             t.Salary = 50000;
 
-            Orm.Save(t);
+            Orm.SaveObject(t);
 
             Console.WriteLine("\n");
         }

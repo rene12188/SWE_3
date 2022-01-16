@@ -16,7 +16,7 @@ namespace SWE3.ExampleApp.Show
             Course c = new Course();
             c.ID = "x.0";
             c.Name = "Demons 1";
-            c.Teacher = Orm.Get<Teacher>("t.0");
+            c.Teacher = Orm.GetObject<Teacher>("t.0");
 
             Student s = new Student();
             s.ID = "s.0";
@@ -25,7 +25,7 @@ namespace SWE3.ExampleApp.Show
             s.Gender = 1;
             s.BirthDate = new DateTime(1990, 1, 12);
             s.Grade = 1;
-            Orm.Save(s);
+            Orm.SaveObject(s);
 
             c.Students.Add(s);
 
@@ -36,13 +36,13 @@ namespace SWE3.ExampleApp.Show
             s.Gender = 1;
             s.BirthDate = new DateTime(1991, 9, 23);
             s.Grade = 2;
-            Orm.Save(s);
+            Orm.SaveObject(s);
 
             c.Students.Add(s);
 
-            Orm.Save(c);
+            Orm.SaveObject(c);
 
-            c = Orm.Get<Course>("x.0");
+            c = Orm.GetObject<Course>("x.0");
 
             Console.WriteLine("Students in " + c.Name + ":");
             foreach(Student i in c.Students)

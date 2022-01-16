@@ -13,13 +13,13 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine("(6) Use Lazy loading for student list");
             Console.WriteLine("-------------------------------------");
 
-            Class c = Orm.Get<Class>("c.0");
-            c.Students.Add(Orm.Get<Student>("s.0"));
-            c.Students.Add(Orm.Get<Student>("s.1"));
+            Class c = Orm.GetObject<Class>("c.0");
+            c.Students.Add(Orm.GetObject<Student>("s.0"));
+            c.Students.Add(Orm.GetObject<Student>("s.1"));
 
-            Orm.Save(c);
+            Orm.SaveObject(c);
 
-            c = Orm.Get<Class>("c.0");
+            c = Orm.GetObject<Class>("c.0");
 
             Console.WriteLine("Students in " + c.Name + ":");
             foreach(Student i in c.Students)

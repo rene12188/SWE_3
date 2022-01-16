@@ -12,7 +12,7 @@ namespace SWE3.ExampleApp.Show
             Console.WriteLine("(4) Load teacher and show classes");
             Console.WriteLine("---------------------------------");
 
-            Teacher t = Orm.Get<Teacher>("t.0");
+            Teacher t = Orm.GetObject<Teacher>("t.0");
 
             Console.WriteLine(t.FirstName + " " + t.Name + " teaches:");
 
