@@ -1,14 +1,8 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE.Tests
+namespace SWE3.Tests
 {
     [TestFixture]
     public class CacheTests

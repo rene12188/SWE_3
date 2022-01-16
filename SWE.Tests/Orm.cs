@@ -4,7 +4,7 @@ using NUnit.Framework;
 using SWE3.ExampleApp.School;
 using SWE3.ORM;
 
-namespace SWE.Tests
+namespace SWE3.Tests
 {
     public class Tests
     {
